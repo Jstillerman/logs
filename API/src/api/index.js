@@ -4,6 +4,7 @@ import facets from './facets';
 import logs from './logs'
 import multer from 'multer'
 import Log from '../models/logs'
+import moment from 'moment'
 
 
 var storage = multer.diskStorage({
@@ -59,6 +60,28 @@ export default ({ config, db }) => {
         }
       })
       res.json(stats)
+    })
+  })
+
+  Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+  }
+
+  api.get('/daydata/:time', (req, res) => {
+    var d = moment(req.params.time).startOf('day')
+
+    console.log(req.params.time, d);
+// TODO: Get This shit to actually work. when is all strings and it needs to be dates...
+    Log.find({"when": {"$gte": d.startOf('day').format(), "$lt": d.endOf('day').format()}}, (err, logs) => {
+      if(err) res.err(err)
+      console.log('logs found:', logs.length);
+      let status = {}
+      status.breakfast = logs.filter(log => (log.action == "ate" && log.tags.includes('breakfast')))
+      status.lunch = logs.filter(log => (log.action == "ate" && log.tags.includes('lunch')))
+      status.dinner = logs.filter(log => (log.action == "ate" && log.tags.includes('dinner')))
+      status.snacks = logs.filter(log => log.action == "ate").diff(status.lunch).diff(status.breakfast).diff(status.dinner)
+
+      res.json({logs, status})
     })
   })
 

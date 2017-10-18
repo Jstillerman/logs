@@ -1,13 +1,12 @@
 <template>
   <div id="quick-entry">
-    <typeahead  :data="['hi', 'bye']" placeholder="whaterver."></typeahead>
     <button v-for="action in actions" @click="trigger(action)" class="button button-3d button-action button-circle button-giant"><i class="fa" :class="action.icon" aria-hidden="true"></i></button><br>
     <button v-for="action in actionsRed" @click="trigger(action)" class="button button-3d button-caution button-circle button-giant"><i class="fa" :class="action.icon" aria-hidden="true"></i></button>
     <div v-if="showDetails" class="details">
       <h2>{{selectedAction.text}}</h2>
-      <v-select v-model="what" placeholder="What?"></v-select><br>
-      <v-select :options="options" v-model="where"  placeholder="Where?"></v-select><br>
-      When? <input v-model="when" type="datetime" name="" value=""><br>
+      <input v-model="what" placeholder="What?"></input><br>
+      <input v-model="where"  placeholder="Where?"></input><br>
+      <input v-model="when" type="datetime" value=""><br>
       <input-tag placeholder="Add people..." :tags="who"></input-tag>
       <div v-if="selectedAction.data">Data: <textarea v-model="data"></textarea></div>
       <input-tag placeholder="Add tags..." :tags="tags"></input-tag>

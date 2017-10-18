@@ -208,7 +208,7 @@ Main components
 
 .timeline-content {
   position: relative;
-  margin-left: 60px;
+  margin: 60px;
   background: white;
   border-radius: 0.25em;
   padding: 1em;

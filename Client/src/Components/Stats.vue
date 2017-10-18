@@ -5,15 +5,19 @@
     # times opening computer: {{computerOpens}}
     <br>
     <bar-chart :data="stats.freq"></bar-chart>
-    <line-chart :data="stats.timeline"></line-chart>
+    <timeline :data="stats.timeline"></timeline>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import eventHub from '../EventHub.js'
+import timeline from './visTimeline.vue'
 
 export default {
+  components: {
+    timeline
+  },
   data () {
     return {
       computerOpens: -1,

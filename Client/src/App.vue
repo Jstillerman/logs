@@ -1,7 +1,8 @@
 <template lang="html">
   <div id="app">
+    <one-day></one-day>
     <quick-entry></quick-entry>
-    <stats></stats>
+    <!--stats></stats-->
     <timeline :points="points"></timeline>
   </div>
 
@@ -10,6 +11,7 @@
 <script>
 import quickEntry from './Components/QuickEntry.vue'
 import timeline from './Components/timeLine.vue'
+import oneDay from './Components/OneDayView.vue'
 import stats from './Components/Stats.vue'
 import axios from 'axios'
 import moment from 'moment'
@@ -47,7 +49,7 @@ export default {
         .then(points => this.points = points)
     }
   },
-  components: {quickEntry, timeline, stats},
+  components: {quickEntry, timeline, stats, oneDay},
 }
 </script>
 
