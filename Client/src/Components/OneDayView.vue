@@ -1,6 +1,7 @@
 <template lang="html">
   <div class="">
     <h1>Single Day View</h1>
+    <h3>{{date}}</h3>
     <div class="day stats">
       <p>Breakfast: {{getMeal('breakfast')}} <br>Lunch: {{getMeal('lunch')}} <br> Dinner: {{getMeal('dinner')}} <br> Snack Status {{snackStatus}}</p>
     </div>
@@ -26,7 +27,8 @@ export default {
       dinnerStatus: 'upcoming',
       snackStatus: 0,
       logs: [],
-      status: {}
+      status: {},
+      date: 'idk yet'
     }
   },
   mounted () {
@@ -47,6 +49,7 @@ export default {
                 return log
           })
           this.status = body.data.status
+          this.date = body.data.date
           return body
         })
         .then(console.log)

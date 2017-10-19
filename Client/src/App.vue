@@ -2,7 +2,7 @@
   <div id="app">
     <one-day></one-day>
     <quick-entry></quick-entry>
-    <!--stats></stats-->
+    <stats></stats>
     <timeline :points="points"></timeline>
   </div>
 

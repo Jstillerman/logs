@@ -80,8 +80,7 @@ export default ({ config, db }) => {
       status.lunch = logs.filter(log => (log.action == "ate" && log.tags.includes('lunch')))
       status.dinner = logs.filter(log => (log.action == "ate" && log.tags.includes('dinner')))
       status.snacks = logs.filter(log => log.action == "ate").diff(status.lunch).diff(status.breakfast).diff(status.dinner)
-
-      res.json({logs, status})
+      res.json({logs, status, date: d.startOf('day').format()})
     })
   })
 
