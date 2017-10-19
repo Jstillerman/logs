@@ -21,6 +21,7 @@ import axios from 'axios'
 import InputTag from 'vue-input-tag'
 import eventHub from '../EventHub.js'
 import {typeahead} from 'vue-strap'
+import conf from '../config.json'
 
 export default {
   name: 'quick-entry',
@@ -80,12 +81,12 @@ export default {
         })
       }
 
-      axios.post('http://localhost:8080/api/logs', body)
+      axios.post(conf.API_LOC + '/api/logs', body)
       .then(() => eventHub.$emit('refresh'))
       this.showDetails = false
     },
     getOptions (action) {
-      axios.get('http://localhost:8080/api/logs/stats/' + action.action)
+      axios.get(conf.API_LOC + '/api/logs/stats/' + action.action)
       .then(page => page.data)
       .then(console.log)
       .then(data => Object.keys(data))

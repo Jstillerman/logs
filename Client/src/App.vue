@@ -16,6 +16,7 @@ import stats from './Components/Stats.vue'
 import axios from 'axios'
 import moment from 'moment'
 import eventHub from './EventHub.js'
+import conf from './config.json'
 
 export default {
   name: 'app',
@@ -34,7 +35,7 @@ export default {
   methods: {
     refreshPoints () {
       console.log('refresh called');
-      axios.get('http://localhost:8080/api/logs/')
+      axios.get(conf.API_LOC+'/api/logs/')
         .then(resp => resp.data)
         .then(logs => logs.map(log => {
               if(!log.pointColor)log.pointColor = 'red'

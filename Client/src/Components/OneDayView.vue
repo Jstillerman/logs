@@ -13,6 +13,7 @@
 import axios from 'axios'
 import timeline from './timeLine.vue'
 import moment from 'moment'
+import conf from '../config.json'
 
 export default {
   components: {
@@ -33,7 +34,7 @@ export default {
   },
   methods: {
     refresh () {
-      axios.get('http://localhost:8080/api/daydata/'+moment().format())
+      axios.get(conf.API_LOC + '/api/daydata/'+moment().format())
       //  .then(resp => JSON.parse(resp))
         .then(body => {
           this.logs = body.data.logs.map(log => {

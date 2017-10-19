@@ -13,6 +13,7 @@
 import axios from 'axios'
 import eventHub from '../EventHub.js'
 import timeline from './visTimeline.vue'
+import conf from '../config.json'
 
 export default {
   components: {
@@ -27,15 +28,15 @@ export default {
   },
   methods: {
     refresh () {
-      axios.get('http://localhost:8080/api/logs?action=opened%20my')
+      axios.get(conf.API_LOC + '/api/logs?action=opened%20my')
       .then(opens => opens.data.length)
       .then(len => this.computerOpens = len)
 
-      axios.get('http://localhost:8080/api/logs')
+      axios.get(conf.API_LOC + '/api/logs')
       .then(logs => logs.data.length)
       .then(len => this.totalLogs = len)
 
-      axios.get('http://localhost:8080/api/logs/stats')
+      axios.get(conf.API_LOC + '/api/logs/stats')
       .then(page => page.data)
       .then(data => {
         let results = []

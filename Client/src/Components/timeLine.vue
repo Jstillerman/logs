@@ -24,6 +24,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import eventHub from '../EventHub.js'
+import conf from '../config.json'
 
 export default{
   props: {
@@ -54,8 +55,7 @@ export default{
       return moment(when).fromNow()
     },
     deleteLog (log) {
-      eventHub.$emit('refresh')
-      axios.delete('http://localhost:8080/api/logs/'+log._id)
+      axios.delete(conf.API_LOC + '/api/logs/'+log._id)
       .then(() => eventHub.$emit('refresh'))
     }
   }
