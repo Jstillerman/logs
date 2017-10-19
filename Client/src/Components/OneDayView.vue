@@ -2,7 +2,7 @@
   <div class="">
     <h1>Single Day View</h1>
     <div class="day stats">
-      <p>Eaten Breakfast: {{breakfastStatus}} <br> Eaten Lunch: {{lunchStatus}} <br> Eaten Dinner: {{dinnerStatus}} <br> Snack Status {{snackStatus}}</p>
+      <p>Breakfast: {{getMeal('breakfast')}} <br>Lunch: {{getMeal('lunch')}} <br> Dinner: {{getMeal('dinner')}} <br> Snack Status {{snackStatus}}</p>
     </div>
     <timeline :points="logs"></timeline>
 
@@ -50,6 +50,9 @@ export default {
           return body
         })
         .then(console.log)
+    },
+    getMeal (type) {
+      return this.status[type].length >= 1 ? this.status[type][0].what : 'nope'
     }
   }
 }
