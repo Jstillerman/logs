@@ -22,7 +22,8 @@
     "vue-instant": "^1.0.2",
     "vue-select": "^2.2.0",
     "vue-strap": "^1.1.37",
-    "vue-timeline": "^0.1.0"
+    "vue-timeline": "^0.1.0",
+    "vue2-editor": "^2.0.26"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

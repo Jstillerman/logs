@@ -8,7 +8,7 @@
       <div class="timeline-content">
         <h2 v-text="point.title"></h2>
         <span @click="deleteLog(point)"><i class="fa fa-trash trash" aria-hidden="true"></i></span>
-        <p v-text="point.text"></p>
+        <p v-text="point.data || point.text"></p>
         <a :href="point.linkUrl"
         class="read-more"
         target="_blank"

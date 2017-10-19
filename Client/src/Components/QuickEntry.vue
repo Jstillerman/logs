@@ -8,7 +8,7 @@
       <input v-model="where"  placeholder="Where?"></input><br>
       <input v-model="when" type="datetime" value=""><br>
       <input-tag placeholder="Add people..." :tags="who"></input-tag>
-      <div v-if="selectedAction.data">Data: <textarea v-model="data"></textarea></div>
+      <div v-if="selectedAction.data">Data: <vue-editor v-model="data"></vue-editor></div>
       <input-tag placeholder="Add tags..." :tags="tags"></input-tag>
       <button @click="submit()" class="button button-3d button-action button-circle button-small" type="button" name="button"><i class="fa fa-check"></i></button>
       <button @click="showDetails=false" class="button button-3d button-caution button-circle button-small" type="button" name="button"><i class="fa fa-times"></i></button>
@@ -22,6 +22,7 @@ import InputTag from 'vue-input-tag'
 import eventHub from '../EventHub.js'
 import {typeahead} from 'vue-strap'
 import conf from '../config.json'
+import { VueEditor } from 'vue2-editor'
 
 export default {
   name: 'quick-entry',
@@ -94,7 +95,8 @@ export default {
   },
   components: {
     InputTag,
-    typeahead
+    typeahead,
+    VueEditor
   }
 }
 </script>
