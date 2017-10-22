@@ -1,18 +1,16 @@
 <template lang="html">
   <div id="app">
-    <one-day></one-day>
-    <quick-entry></quick-entry>
-    <stats></stats>
-    <timeline :points="points"></timeline>
+    <nav-bar></nav-bar>
+    <transition name="fade">
+      <router-view></router-view>
+    </transition>
   </div>
 
 </template>
 
 <script>
-import quickEntry from './Components/QuickEntry.vue'
-import timeline from './Components/timeLine.vue'
-import oneDay from './Components/OneDayView.vue'
-import stats from './Components/Stats.vue'
+import navBar from './Components/NavBar.vue'
+
 import axios from 'axios'
 import moment from 'moment'
 import eventHub from './EventHub.js'
@@ -42,7 +40,7 @@ export default {
               if(!log.img)log.img = 'http://www.jikexueyuan.com/event/static/images/bootstrap/bootstrap-logo.png'
               if(!log.title)log.title = "I " + log.action + " " + log.what
               if(!log.text)log.text = JSON.stringify(log)
-              log.linkUrl =  log.ongoing ? 'http://localhost:8080/api/logs/'+log._id+'/end' : (log.duration ? 'javascript:void(0)': null),
+              log.linkUrl =  log.ongoing ? conf.API_LOC + '/api/logs/'+log._id+'/end' : (log.duration ? 'javascript:void(0)': null),
               log.linkText = log.ongoing ? 'End' : (log.duration ? log.duration + ' minutes' : null)
               return log
           }))
@@ -50,11 +48,14 @@ export default {
         .then(points => this.points = points)
     }
   },
-  components: {quickEntry, timeline, stats, oneDay},
+  components: {navBar},
 }
 </script>
 
 <style lang="css">
+body {
+  margin: 0;
+}
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -62,11 +63,25 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 h2 {
   font-weight: normal;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  transition-duration: .25s;
+}
+
+.fade-enter-active {
+  transition-delay: .25s;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+
 
 </style>

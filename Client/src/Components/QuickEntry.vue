@@ -7,8 +7,9 @@
       <input v-model="what" placeholder="What?"></input><br>
       <input v-model="where"  placeholder="Where?"></input><br>
       <input v-model="when" type="datetime" value=""><br>
-      <input-tag placeholder="Add people..." :tags="who"></input-tag>
+      <button @click="toggleData()" type="button" class="button">Toggle Data</button>
       <div v-if="selectedAction.data">Data: <vue-editor v-model="data"></vue-editor></div>
+      <input-tag placeholder="Add people..." :tags="who"></input-tag>
       <input-tag placeholder="Add tags..." :tags="tags"></input-tag>
       <button @click="submit()" class="button button-3d button-action button-circle button-small" type="button" name="button"><i class="fa fa-check"></i></button>
       <button @click="showDetails=false" class="button button-3d button-caution button-circle button-small" type="button" name="button"><i class="fa fa-times"></i></button>
@@ -38,18 +39,20 @@ export default {
       showDetails: false,
       selectedAction: {},
       actions: [
-        {icon: "fa-leaf", text: "I scratched my ivy", action: "scratched", what:"my ivy",extraOpts:{pointColor: 'green'}},
         {icon: "fa-cutlery", text: "I ate...", action: "ate", extraOpts:{pointColor: 'blue'}},
         {icon: "fa-eye", text: "I saw...", action: "saw"},
         {icon: "fa-shopping-cart", text: "I bought...", action: "bought"},
         {icon: "fa-briefcase", text: "I worked on...", action: "worked on"},
         {icon: "fa-sticky-note", text: "New Journal Entry", action: "wrote", what: "a note", data: true},
+        {icon: "fa-comments", text: "I talked to...", action: "talked to"},
         {icon: "fa-tree", text: "I smoked...", action: "smoked"}
       ],
       actionsRed: [
         {icon: "fa-users", text: "I started chilling with...", action: "socialized with", ongoing: true},
         {icon: "fa-briefcase", text: "I started on...", action: "worked on", ongoing: true},
         {icon: "fa-tree", text: "I started smoking...", action: "smoked", ongoing: true},
+        {icon: "fa-sign-out", text: "I left...", action: "left", ongoing: true},
+        {icon: "fa-tv", text: "I started watching", action: "watched", ongoing: true}
       ]
     }
   },
@@ -62,6 +65,8 @@ export default {
       this.where = ''
       this.who = []
       this.tags = []
+      this.url = ''
+      this.data = ''
       if(action.what) this.what = action.what
       this.getOptions(this.selectedAction)
     },
@@ -90,7 +95,11 @@ export default {
       axios.get(conf.API_LOC + '/api/logs/stats/' + action.action)
       .then(page => page.data)
       .then(console.log)
-      .then(data => Object.keys(data))
+      //.then(data => Object.keys(data))
+    },
+    toggleData () {
+      if(!this.selectedAction.data) this.selectedAction.data = true
+      else this.selectedAction.data = false
     }
   },
   components: {
@@ -101,12 +110,13 @@ export default {
 }
 </script>
 
-<style src="vue-instant/dist/vue-instant.css"></style>
+<!--style src="vue-instant/dist/vue-instant.css"></style-->
 
-<style lang="scss">
+<style scoped lang="scss">
 
 button {
-  margin: 10px !important;
+  margin: 15px !important;
+
 }
 
 

@@ -9,7 +9,8 @@ import moment from 'moment'
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/')
+    console.log(__dirname);
+    cb(null, __dirname + '/uploads/')
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() +".png")

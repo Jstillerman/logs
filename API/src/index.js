@@ -7,6 +7,7 @@ import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
 import config from './config.json';
+import path from 'path'
 
 let app = express();
 app.server = http.createServer(app);
@@ -23,6 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
+
+app.use('/', express.static(path.join(__dirname, '../dist-client')));
 
 // connect to db
 initializeDb( db => {

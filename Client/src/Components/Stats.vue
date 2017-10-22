@@ -5,7 +5,12 @@
     # times opening computer: {{computerOpens}}
     <br>
     <bar-chart :data="stats.freq"></bar-chart>
-    <timeline :data="stats.timeline"></timeline>
+    <h3>{{actionKey + " I " + actionType}}</h3>
+    <v-select @click="getOptions(actionType)" v-model="actionType" :options="Object.keys(stats.freq || {})"></v-select>
+    <v-select v-model="actionKey" :options="actionData.attrs"></v-select>
+    <pie-chart :data="actionData[actionKey]"></pie-chart>
+    <!--timeline :data="stats.timeline"></timeline-->
+    <!--v-radar :stats="stats" :polycolor="polycolor" :radar="radar" :scale="scale">></v-radar-->
   </div>
 </template>
 
@@ -14,16 +19,29 @@ import axios from 'axios'
 import eventHub from '../EventHub.js'
 import timeline from './visTimeline.vue'
 import conf from '../config.json'
+import vSelect from 'vue-select'
+import Radar from 'vue-radar'
+
 
 export default {
   components: {
-    timeline
+    timeline,
+    vSelect,
+    'v-radar': Radar
   },
   data () {
     return {
       computerOpens: -1,
       totalLogs: -1,
-      stats: {}
+      stats: {},
+      actionData: {},
+      actionKey: 'what',
+      actionType: 'ate'
+    }
+  },
+  watch: {
+    actionType (val) {
+      this.getOptions()
     }
   },
   methods: {
@@ -47,6 +65,13 @@ export default {
         return data
       })
       .then(s => this.stats = s)
+    },
+    getOptions (action) {
+      axios.get(conf.API_LOC + '/api/logs/stats/' + this.actionType)
+      .then(page => page.data)
+      .then('poopy', console.log)
+      .then(data => this.actionData = data)
+      //.then(data => Object.keys(data))
     }
   },
   mounted () {
@@ -55,6 +80,7 @@ export default {
     })
 
     this.refresh()
+    this.getOptions(this.actionType)
   }
 }
 </script>

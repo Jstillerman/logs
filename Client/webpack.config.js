@@ -1,12 +1,18 @@
 var path = require('path')
 var webpack = require('webpack')
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/main.js',
+  entry: {
+	'build.js': './src/main.js',
+	},
+  plugins: [
+	new CopyWebpackPlugin([{from:'index.html'}])
+  ],
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, '../API/dist-client'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: '[name]'
   },
   module: {
     rules: [
@@ -34,7 +40,7 @@ module.exports = {
         loader: 'css-loader'
       },
       {
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(html|png|jpg|gif|svg)$/,
         loader: 'file-loader',
         options: {
           name: '[name].[ext]?[hash]'
@@ -65,12 +71,6 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
       }
     }),
     new webpack.LoaderOptionsPlugin({
