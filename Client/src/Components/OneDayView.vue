@@ -2,8 +2,11 @@
   <div class="">
     <h1>Single Day View</h1>
     <h3>{{date}}</h3>
+    <button @click="daysOffset += 1; refresh()" type="button" name="button">Prev Day</button>
+    <button @click="daysOffset -= 1; refresh()" v-if="daysOffset > 0" type="button" name="button">Next Day</button>
     <div class="day stats">
       <p>Breakfast: {{getMeal('breakfast')}} <br>Lunch: {{getMeal('lunch')}} <br> Dinner: {{getMeal('dinner')}} <br> Snack Status {{snackStatus}}</p>
+      <p>Total Entries: {{logs.length}}</p>
     </div>
     <!--timeline :points="logs"></timeline-->
     <div class="row">
@@ -37,19 +40,20 @@ export default {
       snackStatus: 0,
       logs: [],
       status: {},
-      date: 'idk yet'
+      date: 'idk yet',
+      daysOffset: 0
     }
   },
   mounted () {
     eventHub.$on('refresh', () => {
       this.refresh()
     })
-    
+
     this.refresh()
   },
   methods: {
     refresh () {
-      axios.get(conf.API_LOC + '/api/daydata/'+moment().format())
+      axios.get(conf.API_LOC + '/api/daydata/'+moment().subtract(this.daysOffset, 'days').format())
       //  .then(resp => JSON.parse(resp))
         .then(body => {
           this.logs = body.data.logs.map(log => {
