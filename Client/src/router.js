@@ -9,7 +9,8 @@ const routes = [
   {name: 'quick-entry', path: '/quick-entry', component: quickEntry},
   {name: 'stats', path: '/stats', component: stats},
   {name: 'cal', path: '/cal', component: cal},
-  {name: 'day', path: '/day', component: oneDay}
+  {name: 'day', path: '/day', component: oneDay},
+  {path: '/', redirect: 'day'}
 ]
 
 const router = new VueRouter({
