@@ -100,6 +100,7 @@ export default {
     toggleData () {
       if(!this.selectedAction.data) this.selectedAction.data = true
       else this.selectedAction.data = false
+      this.$forceUpdate()
     }
   },
   components: {

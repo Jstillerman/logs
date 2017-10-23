@@ -6,11 +6,8 @@ module.exports = {
   entry: {
 	'build.js': './src/main.js',
 	},
-  plugins: [
-	new CopyWebpackPlugin([{from:'index.html'}])
-  ],
   output: {
-    path: path.resolve(__dirname, '../API/dist-client'),
+    path: path.resolve(__dirname, (process.env.NODE_ENV === 'production' ? '../API/dist-client': './dist/')),
     publicPath: '/dist/',
     filename: '[name]'
   },
@@ -75,6 +72,7 @@ if (process.env.NODE_ENV === 'production') {
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true
-    })
+    }),
+  	new CopyWebpackPlugin([{from:'index.html'}])
   ])
 }

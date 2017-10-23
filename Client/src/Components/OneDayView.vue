@@ -1,9 +1,10 @@
 <template lang="html">
   <div class="">
     <h1>Single Day View</h1>
+    <button v-if="daysOffset != 0" @click="daysOffset = 0"type="button" name="button">Today</button>
     <h3>{{date}}</h3>
-    <button @click="daysOffset += 1; refresh()" type="button" name="button">Prev Day</button>
-    <button @click="daysOffset -= 1; refresh()" v-if="daysOffset > 0" type="button" name="button">Next Day</button>
+    <button @click="daysOffset += 1" type="button" name="button">Prev Day</button>
+    <button @click="daysOffset -= 1" v-if="daysOffset > 0" type="button" name="button">Next Day</button>
     <div class="day stats">
       <p>Breakfast: {{getMeal('breakfast')}} <br>Lunch: {{getMeal('lunch')}} <br> Dinner: {{getMeal('dinner')}} <br> Snack Status {{snackStatus}}</p>
       <p>Total Entries: {{logs.length}}</p>
@@ -31,6 +32,11 @@ import eventHub from '../EventHub.js'
 export default {
   components: {
     timeline
+  },
+  watch: {
+    daysOffset () {
+      this.refresh()
+    }
   },
   data () {
     return {

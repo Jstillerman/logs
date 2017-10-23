@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="cal">
-    <calendar :events="events"></calendar>
+    <calendar @eventClick='handleEventClick' :events="events"></calendar>
   </div>
 
 </template>
@@ -26,10 +26,6 @@ export default {
       this.refresh()
     })
 
-    eventHub.$on('eventClick', (event, jsEvent, pos) => {
-      console.log('eventClick', event, jsEvent, pos);
-    })
-
     this.refresh()
   },
   methods: {
@@ -37,10 +33,13 @@ export default {
       axios.get(conf.API_LOC + '/api/logs/')
         .then(page => page.data)
         .then(data => data.map(ent => {
-          return {title: "I "+ent.action+" "+ent.what, start: moment(ent.when).format()}
+          return {title: "I "+ent.action+" "+ent.what, start: moment(ent.when).format(), id: ent._id}
         }))
         .then(events => this.events = events)
         .then(console.log)
+    },
+    handleEventClick (event, jsEvent) {
+      console.log('handled', event.title);
     }
   }
 }

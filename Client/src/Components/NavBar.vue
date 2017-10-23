@@ -1,6 +1,7 @@
 <template lang="html">
   <div class="sticky navbar">
     <ul>
+      <li><router-link :to="{ name: 'timeline', params: {} }">Timeline</router-link></li>
       <li><router-link :to="{ name: 'cal', params: {} }">Calendar</router-link></li>
       <li><router-link :to="{ name: 'day', params: {} }">Day</router-link></li>
       <li><router-link :to="{ name: 'stats', params: {} }">Stats</router-link></li>
@@ -36,11 +37,11 @@ a {
   outline: none;
   text-decoration: none;
   display: inline-block;
-  width: 19.5%;
+  width: 16.5%;
   margin-right: 0.625%;
   text-align: center;
   line-height: 3;
-  color: #303030;
+  color: #c0c0c0;
 }
 
 li:last-child a {
