@@ -69,7 +69,7 @@ export default ({ config, db }) => {
   }
 
   api.get('/daydata/:time', (req, res) => {
-    var d = moment(req.params.time).startOf('day')
+    var d = moment(req.params.time)//.startOf('day')
 
     console.log(req.params.time, d);
 // TODO: Get This shit to actually work. when is all strings and it needs to be dates...
