@@ -51,6 +51,7 @@ export default ({ config, db }) => {
       logs.forEach(log => {
         for (var key in log.toObject()) {
           //console.log(`log.${prop} = ${log[prop]}`);
+          key = key.toLowerCase()
           if(stats.attrs.indexOf(key) == -1) stats.attrs.push(key)
           if(key != "_id"){
             if(!stats[key]) stats[key] = {}
