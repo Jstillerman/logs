@@ -6,7 +6,7 @@
     <button @click="daysOffset += 1" type="button" name="button">Prev Day</button>
     <button @click="daysOffset -= 1" v-if="daysOffset > 0" type="button" name="button">Next Day</button>
     <div class="day stats">
-      <p>Breakfast: {{getMeal('breakfast')}} <br>Lunch: {{getMeal('lunch')}} <br> Dinner: {{getMeal('dinner')}} <br> Snack Status {{snackStatus}}</p>
+      <p>Breakfast: {{getMeal('breakfast')}} <br>Lunch: {{getMeal('lunch')}} <br> Dinner: {{getMeal('dinner')}} <br> Snack Status: {{status.snacks.length}}</p>
       <p>Total Entries: {{logs.length}}</p>
     </div>
     <!--timeline :points="logs"></timeline-->
@@ -14,7 +14,9 @@
       <hr>
       <div v-for="point in logs" class="col">
         <p>{{point.title}} -- {{formatTime(point.when)}}</p>
-
+        <p v-if="point._id == selectedPoint">{{point}}</p>
+        <button v-if="point._id != selectedPoint" class="button" @click="selectedPoint = point._id">Expand</button>
+        <button v-if="point._id == selectedPoint" class="button" @click="selectedPoint = ''">Minimize</button>
         <hr>
       </div>
     </div>
@@ -47,7 +49,8 @@ export default {
       logs: [],
       status: {},
       date: 'idk yet',
-      daysOffset: 0
+      daysOffset: 0,
+      selectedPoint: ''
     }
   },
   mounted () {

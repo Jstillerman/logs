@@ -1,6 +1,8 @@
 <template lang="html">
   <div class="cal">
-    <calendar @eventClick='handleEventClick' :events="events"></calendar>
+    <input v-model="shouldFilter" type="checkbox" name="" value="">
+    <input v-model="actionFilter" type="text" name="" value=""><br>
+    <calendar @eventClick='handleEventClick' :events="visibleEvents"></calendar>
   </div>
 
 </template>
@@ -18,7 +20,15 @@ export default {
   },
   data () {
     return {
-      events: []
+      events: [],
+      shouldFilter: true,
+      actionFilter: 'ate'
+    }
+  },
+  computed: {
+    visibleEvents () {
+      if(this.shouldFilter) return this.events.filter((e) => e.action == this.actionFilter)
+      else return this.events
     }
   },
   mounted () {
@@ -33,13 +43,14 @@ export default {
       axios.get(conf.API_LOC + '/api/logs/')
         .then(page => page.data)
         .then(data => data.map(ent => {
-          return {title: "I "+ent.action+" "+ent.what, start: moment(ent.when).format(), id: ent._id}
+          return {title: "I "+ent.action+" "+ent.what, start: moment(ent.when).format(), id: ent._id, action: ent.action}
         }))
         .then(events => this.events = events)
         .then(console.log)
     },
     handleEventClick (event, jsEvent) {
-      console.log('handled', event.title);
+      //console.log('handled', event.title);
+      this.router.push({name: 'event'})
     }
   }
 }

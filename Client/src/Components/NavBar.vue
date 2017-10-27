@@ -6,13 +6,29 @@
       <li><router-link :to="{ name: 'day', params: {} }">Day</router-link></li>
       <li><router-link :to="{ name: 'stats', params: {} }">Stats</router-link></li>
       <li><router-link :to="{ name: 'quick-entry', params: {} }">Entry</router-link></li>
+      <li>{{getGreeting()}}</li>
     </ul>
 
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+let sesh = Vue.prototype.$session
+
 export default {
+  computed: {
+    session() {
+      return []//sesh.get('profile')
+    }
+  },
+  methods: {
+    getGreeting () {
+      return this.session.name
+    }
+  }
+
+
 }
 </script>
 
@@ -37,7 +53,7 @@ a {
   outline: none;
   text-decoration: none;
   display: inline-block;
-  width: 16.5%;
+  width: 10.5%;
   margin-right: 0.625%;
   text-align: center;
   line-height: 3;

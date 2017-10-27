@@ -13,7 +13,8 @@ var Log = mongoose.model('Log', {
 	data: String,
 	endTime: String,
 	who: [String],
-	tags: [String]
+	tags: [String],
+	user: String
 });
 
 

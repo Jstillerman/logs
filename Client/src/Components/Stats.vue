@@ -1,14 +1,17 @@
 <template lang="html">
   <div class="stats">
+    Timeline limittations: <input v-model="enableTimelineLimits" type="checkbox"><input><input v-model="timelineLimitation"type="text" name="" value="">
     Total # logs: {{totalLogs}}
-    <br>
-    # times opening computer: {{computerOpens}}
     <br>
     <bar-chart :data="stats.freq"></bar-chart>
     <h3>{{actionKey + " I " + actionType}}</h3>
     <v-select @click="getOptions(actionType)" v-model="actionType" :options="Object.keys(stats.freq || {})"></v-select>
     <v-select v-model="actionKey" :options="actionData.attrs"></v-select>
     <pie-chart :data="actionData[actionKey]"></pie-chart>
+    <vue-chart
+    type="PieChart"
+    :columns="columns"
+    :rows="rows"></vue-chart>
     <!--timeline :data="stats.timeline"></timeline-->
     <!--v-radar :stats="stats" :polycolor="polycolor" :radar="radar" :scale="scale">></v-radar-->
   </div>
@@ -31,12 +34,30 @@ export default {
   },
   data () {
     return {
-      computerOpens: -1,
       totalLogs: -1,
+      enableTimelineLimits: false,
+      timelineLimitation: '',
       stats: {},
       actionData: {},
       actionKey: 'what',
-      actionType: 'ate'
+      actionType: 'ate',
+      //google charts
+      columns: [{
+        'type': 'string',
+        'label': 'Year'
+      }, {
+        'type': 'number',
+        'label': 'Sales'
+      }, {
+        'type': 'number',
+        'label': 'Expenses'
+      }],
+      rows: [
+        ['2004', 1000, 400],
+        ['2005', 1170, 460],
+        ['2006', 660, 1120],
+        ['2007', 1030, 540]
+      ],
     }
   },
   watch: {
@@ -46,10 +67,6 @@ export default {
   },
   methods: {
     refresh () {
-      axios.get(conf.API_LOC + '/api/logs?action=opened%20my')
-      .then(opens => opens.data.length)
-      .then(len => this.computerOpens = len)
-
       axios.get(conf.API_LOC + '/api/logs')
       .then(logs => logs.data.length)
       .then(len => this.totalLogs = len)
