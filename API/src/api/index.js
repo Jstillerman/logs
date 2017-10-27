@@ -86,6 +86,17 @@ export default ({ config, db }) => {
     })
   })
 
+  api.use('/kabam', (req, res) => {
+    Log.find((err, logs) => {
+      if (err) res.err(err)
+      logs.forEach(log => {
+        log.user="Jason Stillerman"
+        log.save()
+      })
+      res.send('op complete')
+    })
+  })
+
 	api.use('/logs', logs({ config, db}));
 
 	api.post('/upload', upload.array('img', 3), (req, res) => {
