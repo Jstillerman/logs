@@ -41,4 +41,5 @@ initializeDb( db => {
 	});
 });
 
+app.use('*', express.static(path.join(__dirname, '../dist-client')));
 export default app;
