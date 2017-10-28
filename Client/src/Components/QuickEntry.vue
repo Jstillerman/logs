@@ -24,6 +24,7 @@ import eventHub from '../EventHub.js'
 import {typeahead} from 'vue-strap'
 import conf from '../config.json'
 import { VueEditor } from 'vue2-editor'
+import Vue from 'vue'
 
 export default {
   name: 'quick-entry',
@@ -72,6 +73,9 @@ export default {
     },
     submit () {
       let body = {}
+
+      body.user = Vue.prototype.$session.get('profile').name
+      console.log('user', body.user);
 
       body.action = this.selectedAction.action
       if(this.what != '') body.what = this.what
