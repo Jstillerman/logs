@@ -1,6 +1,7 @@
 import { version } from '../../package.json';
 import { Router } from 'express';
 import facets from './facets';
+import people from './people'
 import logs from './logs'
 import multer from 'multer'
 import Log from '../models/logs'
@@ -98,6 +99,7 @@ export default ({ config, db }) => {
   })
 
 	api.use('/logs', logs({ config, db}));
+  api.use('/people', people({ config, db}));
 
 	api.post('/upload', upload.array('img', 3), (req, res) => {
 		 return res.end("File uploaded sucessfully!.");
