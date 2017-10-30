@@ -1,5 +1,8 @@
 <template lang="html">
-  <time-line :points="logs"></time-line>
+  <div class="viewer">
+    <input v-model="user" type="text" name="" value="">
+    <time-line :points="logs"></time-line>
+  </div>
 </template>
 
 <script>
@@ -8,18 +11,19 @@ import eventHub from '../EventHub.js'
 import axios from 'axios'
 import conf from '../config.json'
 import moment from 'moment'
+import Vue from 'vue'
 
 export default {
   components: {timeLine},
-  props: {
-    user: {
-      default: 'any',
-      type: String
-    }
-  },
   data () {
     return {
-      logs: []
+      logs: [],
+      user: Vue.prototype.$session.get('profile').name
+    }
+  },
+  watch: {
+    user () {
+      this.reload()
     }
   },
   mounted () {

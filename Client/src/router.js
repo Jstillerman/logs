@@ -4,7 +4,7 @@ import timeLine from './Components/Viewer.vue'
 import oneDay from './Components/OneDayView.vue'
 import stats from './Components/Stats.vue'
 import cal from './Components/Calendar.vue'
-import friends from './Components/Friends.vue'
+
 import callback from './Components/Callback.vue'
 import Vue from 'vue'
 
@@ -15,7 +15,6 @@ const routes = [
   {name: 'day', path: '/day', component: oneDay},
   {name: 'timeline', path: '/timeline', component: timeLine},
   {name: 'callback', path: '/callback', component: callback},
-  {name: 'friends', path: '/friends', component: friends},
   {path: '/', redirect: 'day'}
 ]
 

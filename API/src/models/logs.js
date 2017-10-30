@@ -14,7 +14,8 @@ var Log = mongoose.model('Log', {
 	endTime: String,
 	who: [String],
 	tags: [String],
-	user: String
+	user: String,
+	pos: Object
 });
 
 

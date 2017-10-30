@@ -25,6 +25,7 @@
     "vue-fullcalendar": "^1.0.9",
     "vue-input-tag": "0.0.16",
     "vue-instant": "^1.0.2",
+    "vue-json-tree-view": "^2.1.1",
     "vue-radar": "^0.1.5",
     "vue-router": "^3.0.1",
     "vue-select": "^2.3.0",

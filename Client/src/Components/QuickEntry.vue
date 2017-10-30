@@ -37,6 +37,7 @@ export default {
       data: '',
       options: [],
       tags: [],
+      pos: {},
       showDetails: false,
       selectedAction: {},
       actions: [
@@ -46,7 +47,8 @@ export default {
         {icon: "fa-briefcase", text: "I worked on...", action: "worked on"},
         {icon: "fa-sticky-note", text: "New Journal Entry", action: "wrote", what: "a note", data: true},
         {icon: "fa-comments", text: "I talked to...", action: "talked to"},
-        {icon: "fa-tree", text: "I smoked...", action: "smoked"}
+        {icon: "fa-tree", text: "I smoked...", action: "smoked"},
+        {icon: "fa-male", text: "I tested (Athletic)...", action: "performed", what: "20 pushups"}
       ],
       actionsRed: [
         {icon: "fa-users", text: "I started chilling with...", action: "socialized with", ongoing: true},
@@ -59,6 +61,9 @@ export default {
   },
   methods: {
     trigger (action) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        this.pos = pos
+      })
       this.showDetails = true
       this.selectedAction = action
       this.what = ''
@@ -84,6 +89,7 @@ export default {
       if(this.when != '') body.when = this.when
       if(this.data != '') body.data = this.data
       if(this.tags.length != 0) body.tags = this.tags
+      body.pos = this.pos
       if(this.selectedAction.ongoing) body.ongoing = true
       if(this.selectedAction.extraOpts) {
         Object.keys(this.selectedAction.extraOpts).forEach(key => {
@@ -112,6 +118,10 @@ export default {
     typeahead,
     VueEditor
   }
+}
+
+function isEmpty(obj){
+  return false
 }
 </script>
 

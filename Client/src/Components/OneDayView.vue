@@ -14,7 +14,8 @@
       <hr>
       <div v-for="point in logs" class="col">
         <p>{{point.title}} -- {{formatTime(point.when)}}</p>
-        <p v-if="point._id == selectedPoint">{{point}}</p>
+        <input v-if="point._id == selectedPoint" v-model="treeOpts.modifiable" type="checkbox">Editable</input>
+        <tree-view v-if="point._id == selectedPoint" :data="point" :options="treeOpts"></tree-view>
         <button v-if="point._id != selectedPoint" class="button" @click="selectedPoint = point._id">Expand</button>
         <button v-if="point._id == selectedPoint" class="button" @click="selectedPoint = ''">Minimize</button>
         <hr>
@@ -46,6 +47,9 @@ export default {
       lunchStatus: false,
       dinnerStatus: 'upcoming',
       snackStatus: 0,
+      treeOpts: {
+        modifiable: false
+      },
       logs: [],
       status: {},
       date: 'idk yet',
@@ -84,6 +88,9 @@ export default {
           return body
         })
         .then(console.log)
+    },
+    onChangeData(data){
+      console.log('data updated', data);
     },
     formatTime: (time) => moment(time).format("hh:mm a"),
     getMeal (type) {

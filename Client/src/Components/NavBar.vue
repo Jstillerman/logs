@@ -6,7 +6,6 @@
       <li><router-link :to="{ name: 'day', params: {} }">Day</router-link></li>
       <li><router-link :to="{ name: 'stats', params: {} }">Stats</router-link></li>
       <li><router-link :to="{ name: 'quick-entry', params: {} }">Entry</router-link></li>
-      <li><router-link :to="{ name: 'friends', params: {} }">Friends</router-link></li>
       <li>{{getGreeting()}}</li>
     </ul>
 

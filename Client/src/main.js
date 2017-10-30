@@ -11,6 +11,9 @@ import VueCharts from 'vue-charts'
 import VueSession from 'vue-session'
 Vue.use(VueSession)
 
+import TreeView from 'vue-json-tree-view'
+Vue.use(TreeView)
+
 import 'vue-instant/dist/vue-instant.css'
 import VueInstant from 'vue-instant'
 Vue.use(VueInstant)

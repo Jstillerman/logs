@@ -4,3 +4,5 @@ API/dist
 API/logs
 API/npm-debug.log
 */**/.DS_Store
+Client/src/auth/auth0-variables.js
+

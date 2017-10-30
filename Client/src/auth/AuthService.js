@@ -40,7 +40,7 @@ export default class AuthService {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
-        router.push('day')
+        router.push('/quick-entry')
       } else if (err) {
         router.replace('home')
         console.log(err)
