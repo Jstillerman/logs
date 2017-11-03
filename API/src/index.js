@@ -39,6 +39,13 @@ initializeDb( db => {
 
 	app.use('/assistant', assistant({ config, db }))
 
+	app.post('/payload', (req, res) => {
+		let e = new Log({user: "Jason Stillerman", action: "pushed to", what: "logs", when: Date()})
+		e.save((err, log) => {
+			if(err) return err
+			res.json(log)
+		})
+	})
 	app.server.listen(process.env.PORT || config.port, () => {
 		console.log(`Started on port ${app.server.address().port}`);
 	});
