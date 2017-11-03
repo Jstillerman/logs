@@ -9,6 +9,7 @@ import api from './api';
 import assistant from './assistant'
 import config from './config.json';
 import path from 'path'
+import Log from './models/logs'
 
 let app = express();
 app.server = http.createServer(app);
