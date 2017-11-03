@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
+import assistant from './assistant'
 import config from './config.json';
 import path from 'path'
 
@@ -36,10 +37,12 @@ initializeDb( db => {
 	// api router
 	app.use('/api', api({ config, db }));
 
+	app.use('/assistant', assistant({ config, db }))
+
 	app.server.listen(process.env.PORT || config.port, () => {
 		console.log(`Started on port ${app.server.address().port}`);
 	});
 });
 
-app.use('*', express.static(path.join(__dirname, '../dist-client')));
+//app.use('*', express.static(path.join(__dirname, '../dist-client')));
 export default app;
