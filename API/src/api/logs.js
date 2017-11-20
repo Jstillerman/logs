@@ -51,8 +51,10 @@ export default ({ config }) => {
 				if (key!=='id') {
 					log[key] = body[key];
 				}
+				log.save(()=>{
+					res.sendStatus(204);
+				})
 			}
-			res.sendStatus(204);
 		},
 
 		/** DELETE /:id - Delete a given entity */
