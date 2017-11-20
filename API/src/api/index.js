@@ -71,11 +71,11 @@ export default ({ config, db }) => {
   }
 
   api.get('/daydata/:time', (req, res) => {
-    var d = moment(req.params.time)//.startOf('day')
+    var d = moment(req.params.time).startOf('day')
 
     console.log(req.params.time, d);
 // TODO: Get This shit to actually work. when is all strings and it needs to be dates...
-    Log.find({"when": {"$gte": d.startOf('day').format(), "$lt": d.endOf('day').format()}}, (err, logs) => {
+    Log.find({"when": {"$gte": d.toDate(), "$lt": d.add(1, 'days').toDate()}}, (err, logs) => {
       if(err) res.err(err)
       console.log('logs found:', logs.length);
       let status = {}
