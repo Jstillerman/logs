@@ -46,15 +46,17 @@ export default ({ config }) => {
 		},
 
 		/** PUT /:id - Update a given entity */
-		update({ log, body }, res) {
-			for (let key in body) {
-				if (key!=='id') {
-					log[key] = body[key];
+		update({ body }, res) {
+			Log.findOne({_id: req.params.log}, (log) => {
+				for (let key in body) {
+					if (key!=='id') {
+						log[key] = body[key];
+					}
 				}
 				log.save(()=>{
 					res.sendStatus(204);
 				})
-			}
+			})
 		},
 
 		/** DELETE /:id - Delete a given entity */
