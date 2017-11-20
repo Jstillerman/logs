@@ -4,6 +4,8 @@ import EventEmitter from 'EventEmitter'
 import eventHub from '../EventHub'
 import {router} from '../router'
 import Vue from 'vue'
+import axios from 'axios'
+import conf from '../config.json'
 
 export default class AuthService {
 
@@ -40,6 +42,7 @@ export default class AuthService {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
+        this.updateServer(authResult.idTokenPayload)
         router.push('/quick-entry')
       } else if (err) {
         router.replace('home')
@@ -79,6 +82,20 @@ export default class AuthService {
     Vue.prototype.$session.destroy()
     // navigate to the home route
     router.replace('/')
+  }
+
+  updateServer (idTokenPayload) {
+    axios.get(conf.API_LOC + '/api/people')
+    .then(page => page.data.filter(person => person.name == idTokenPayload.name))
+    .then(rest => {
+      console.log('rest', rest);
+      return rest.length > 0
+    })
+    .then(inDB => {
+      if(!inDB) {
+        axios.post(conf.API_LOC + '/api/people', {name: idTokenPayload.name})
+      }
+    })
   }
 
   isAuthenticated () {

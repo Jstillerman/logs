@@ -54,7 +54,7 @@ export default ({ config }) => {
 					}
 				}
 				log.save()
-				res.sendStatus(204);
+				res.sendStatus(204)
 			})
 		},
 

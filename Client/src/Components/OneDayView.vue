@@ -15,7 +15,7 @@
       <div v-for="point in logs" class="col">
         <p>{{point.title}} -- {{formatTime(point.when)}}</p>
         <input v-if="point._id == selectedPoint" v-model="treeOpts.modifiable" type="checkbox">Editable</input>
-        <tree-view v-if="point._id == selectedPoint" :data="point" :options="treeOpts"></tree-view>
+        <tree-view v-if="point._id == selectedPoint" :data="point" :options="treeOpts" @change-data="onChangeData"></tree-view>
         <button v-if="point._id != selectedPoint" class="button" @click="selectedPoint = point._id">Expand</button>
         <button v-if="point._id == selectedPoint" class="button" @click="selectedPoint = ''">Minimize</button>
         <hr>
@@ -91,6 +91,8 @@ export default {
     },
     onChangeData(data){
       console.log('data updated', data);
+      axios.put(conf.API_LOC + "/api/logs/"+data._id, data)
+      .then((result) => console.log('competed update', result))
     },
     formatTime: (time) => moment(time).format("hh:mm a"),
     getMeal (type) {

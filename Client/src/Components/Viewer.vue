@@ -1,12 +1,13 @@
 <template lang="html">
   <div class="viewer">
-    <input v-model="user" type="text" name="" value="">
+    <person-picker v-model="user"></person-picker>
     <time-line :points="logs"></time-line>
   </div>
 </template>
 
 <script>
 import timeLine from './timeLine.vue'
+import personPicker from './PersonPicker.vue'
 import eventHub from '../EventHub.js'
 import axios from 'axios'
 import conf from '../config.json'
@@ -14,11 +15,11 @@ import moment from 'moment'
 import Vue from 'vue'
 
 export default {
-  components: {timeLine},
+  components: {timeLine, personPicker},
   data () {
     return {
       logs: [],
-      user: Vue.prototype.$session.get('profile').name
+      user: 'Jason Stillerman'//Vue.prototype.$session.get('profile').name
     }
   },
   watch: {
@@ -35,6 +36,7 @@ export default {
   },
   methods: {
     reload () {
+      console.log('reloading viewer');
       axios.get(conf.API_LOC + '/api/logs/' + (this.user==='any' ? '' : '?user='+this.user))
         .then(page => page.data)
         .then(logs => logs.map(log => {
