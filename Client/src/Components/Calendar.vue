@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     visibleEvents () {
-      if(this.shouldFilter) return this.events.filter((e) => (e.action == "ate" || e.action == "smoked"))
+      if(this.shouldFilter) return this.events.filter((e) => (e.action == actionFilter))
       else return this.events
     }
   },
