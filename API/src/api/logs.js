@@ -47,15 +47,14 @@ export default ({ config }) => {
 
 		/** PUT /:id - Update a given entity */
 		update(req, res) {
-			Log.findOne({_id: req.params.log}, (log) => {
+			Log.findById(req.params.log, (err, log) => {
 				for (let key in req.body) {
 					if (key!=='id') {
 						log[key] = req.body[key];
 					}
 				}
-				log.save(()=>{
-					res.sendStatus(204);
-				})
+				log.save()
+				res.sendStatus(204);
 			})
 		},
 
