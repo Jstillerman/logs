@@ -14,7 +14,7 @@ export default ({ config, db }) => {
 	});
 
   assistant.get('/:sentence', (req, res) => {
-    let s = new Log({action: 'said', what: req.params.sentence, when: Date(), where: 'my room'})
+    let s = new Log({action: 'told Google Assistant', what: "\""+req.params.sentence+"\"", when: Date(), where: 'my room', user: "Jason Stillerman"})
     s.save((err, log) => {
       if(err) return err
       res.json(log)

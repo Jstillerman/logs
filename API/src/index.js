@@ -9,6 +9,7 @@ import api from './api';
 import assistant from './assistant'
 import config from './config.json';
 import path from 'path'
+import Log from './models/logs'
 
 let app = express();
 app.server = http.createServer(app);
@@ -39,10 +40,17 @@ initializeDb( db => {
 
 	app.use('/assistant', assistant({ config, db }))
 
+	app.post('/payload', (req, res) => {
+		let e = new Log({user: "Jason Stillerman", action: "pushed to", what: "logs", when: Date()})
+		e.save((err, log) => {
+			if(err) return err
+			res.json(log)
+		})
+	})
 	app.server.listen(process.env.PORT || config.port, () => {
 		console.log(`Started on port ${app.server.address().port}`);
 	});
 });
 
-//app.use('*', express.static(path.join(__dirname, '../dist-client')));
+app.use('*', express.static(path.join(__dirname, '../dist-client')));
 export default app;
