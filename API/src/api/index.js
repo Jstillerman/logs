@@ -71,8 +71,7 @@ export default ({ config, db }) => {
   }
 
   api.get('/daydata/:time', (req, res) => {
-    var d = moment(req.params.time).startOf('day')
-
+    var d = moment(req.params.time).startOf('day').hours(5)
     console.log(req.params.time, d);
 // TODO: Get This shit to actually work. when is all strings and it needs to be dates...
     Log.find({"when": {"$gte": d.toDate(), "$lt": d.add(1, 'days').toDate()}}, (err, logs) => {
@@ -83,7 +82,7 @@ export default ({ config, db }) => {
       status.lunch = logs.filter(log => (log.action == "ate" && log.tags.includes('lunch')))
       status.dinner = logs.filter(log => (log.action == "ate" && log.tags.includes('dinner')))
       status.snacks = logs.filter(log => log.action == "ate").diff(status.lunch).diff(status.breakfast).diff(status.dinner)
-      res.json({logs, status, date: d.startOf('day').format("MMM Do")})
+      res.json({logs, status, date: d.format("MMM Do")})
     })
   })
 
