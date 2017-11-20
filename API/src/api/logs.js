@@ -46,11 +46,11 @@ export default ({ config }) => {
 		},
 
 		/** PUT /:id - Update a given entity */
-		update({ body }, res) {
+		update(req, res) {
 			Log.findOne({_id: req.params.log}, (log) => {
-				for (let key in body) {
+				for (let key in req.body) {
 					if (key!=='id') {
-						log[key] = body[key];
+						log[key] = req.body[key];
 					}
 				}
 				log.save(()=>{
