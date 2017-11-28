@@ -9,6 +9,7 @@ var Log = mongoose.model('Log', {
 	when: Date,
 	ongoing: Boolean,
 	intensity: Number,
+	price: Number,
 	duration: Number, //in minutes
 	pointColor: String,
 	data: String,
