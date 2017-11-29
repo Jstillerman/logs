@@ -18,7 +18,11 @@
     "quasar-extras": "0.x",
     "quasar-framework": "^0.14.4",
     "vue": "^2.5.0",
-    "vue-router": "^3.0.1"
+    "vue-chart": "^2.0.0",
+    "vue-fullcalendar": "^1.0.9",
+    "vue-hotel-datepicker": "^2.0.11",
+    "vue-router": "^3.0.1",
+    "vue-select": "^2.3.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.0",
