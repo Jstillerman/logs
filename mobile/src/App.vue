@@ -1,7 +1,6 @@
 <template>
   <!-- Don't drop "q-app" class -->
   <div id="q-app">
-    HEYYYA
     <q-layout ref="layout" view="lHh Lpr fff" :left-class="{'bg-grey-2': true}">
       <q-toolbar slot="header">
         <q-btn flat @click="$refs.layout.toggleLeft()">
@@ -19,6 +18,14 @@
           <q-side-link item to='/timeline'>
             <q-item-side icon="fa-list" />
             <q-item-main label="Timeline"/>
+          </q-side-link>
+          <q-side-link item to='/calendar'>
+            <q-item-side icon="fa-calendar" />
+            <q-item-main label="Calendar"/>
+          </q-side-link>
+          <q-side-link item to='/stats'>
+            <q-item-side icon="fa-bar-chart" />
+            <q-item-main label="Stats"/>
           </q-side-link>
         </q-list>
       </div>

@@ -27,6 +27,8 @@ export default new VueRouter({
   routes: [
     { path: '/entry', component: load('LogEntry') },
     { path: '/timeline', component: load('Timeline') },
+    { path: '/stats', component: load('Stats') },
+    { path: '/calendar', component: load('Calendar') },
     { path: '/', redirect: '/entry' },
     { path: '/hello', component: load('Hello') },
 
