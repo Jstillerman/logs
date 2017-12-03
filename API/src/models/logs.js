@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test', { useMongoClient: true, promiseLibrary: global.Promise });
 
-
 var Log = mongoose.model('Log', {
 	action: String,
 	what: String,
@@ -17,9 +16,9 @@ var Log = mongoose.model('Log', {
 	who: [String],
 	tags: [String],
 	user: String,
-	pos: Object
+	pos: Object,
+	url: String
 });
-
 
 // Allow any schema
 //var Log = new mongoose.model('Log', { any: mongoose.Schema.Types.Mixed });
