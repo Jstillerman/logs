@@ -6,9 +6,11 @@ export default {
   methods: {
     del (log) {
       axios.delete(conf.API_LOC + '/api/logs/' + log._id)
+        .then(this.refresh())
     },
     end (log) {
       axios.get(conf.API_LOC + '/api/logs/' + log._id + '/end')
+        .then(this.refesh())
     },
     cancel (log) {
       log.ongoing = false

@@ -3,7 +3,12 @@
     <div v-for='day in days' class="singleday">
       <h3>{{day.date}}</h3>
       Total Logs: {{day.logs.length}}<br>
-      Productivity: {{getHours(day.productivity)}}<br>
+      Productivity: {{getHours(day.productivity.total)}}<br>
+      Logs Productivity: {{getHours(day.productivity.logs)}}<br>
+      Other Productivity: {{getHours(day.productivity.other)}}<br>
+      Productivity Types: {{day.productivity.types}}<br>
+      Things Eaten: {{day.stats.mealCount}}<br>
+      Times Smoked: {{day.stats.smokeCount}}
     </div>
   </div>
 </template>
@@ -50,10 +55,25 @@ export default {
               }
             })
 
-            day.productivity = sum(day.logs.map(log => {
+
+            day.productivity = {}
+            day.productivity.total = sum(day.logs.map(log => {
               if (log.duration) return log.duration
               return 0
             }))
+
+            day.productivity.logs = sum(day.logs.filter(log => log.what.toLowerCase() == 'logs' && log.action == 'worked on')
+            .map(log => {
+              if (log.duration) return log.duration
+              return 0
+            }))
+
+            day.stats = {}
+            day.stats.mealCount = day.logs.filter(log => log.action === "ate").length
+            day.stats.smokeCount = day.logs.filter(log => log.action === "smoked").length
+
+            day.productivity.other = day.productivity.total - day.productivity.logs
+            day.productivity.types = day.logs.filter(log => log.action === "worked on").map(log => log.what)
 
             return day
           }).reverse()

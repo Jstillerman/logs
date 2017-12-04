@@ -17,7 +17,8 @@
       </div>
       <div v-else>
         <textarea v-model="log.editText" id="${4}" cols="${7:30}" rows="${11:10}">${12}</textarea>
-        <q-btn @click="update(log.editText, log)">Update</q-btn>
+        <q-btn @click="put(JSON.parse(log.editText))">Update</q-btn>
+        <q-btn @click="del(log)">Delete</q-btn>
       </div>
     </div>
   </div>
@@ -28,8 +29,10 @@ import axios from 'axios'
 import conf from '../config.json'
 import moment from 'moment'
 import {QBtn} from 'quasar'
+import mixins from '../mixins'
 
 export default {
+  mixins: [mixins],
   components: {QBtn},
   data () {
     return {
@@ -52,12 +55,6 @@ export default {
         }))
         .then(logs => {
           this.logs = logs
-        })
-    },
-    end (id) {
-      axios.get(conf.API_LOC + '/api/logs/' + id + '/end')
-        .then(() => {
-          this.refresh()
         })
     },
     update (logJSON, original) {
