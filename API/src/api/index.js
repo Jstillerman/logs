@@ -86,6 +86,20 @@ export default ({ config, db }) => {
     })
   })
 
+  api.get('/daydata/', (req, res) => {
+    Log.find({}, (err, logs) => {
+      var aggr = {}
+      logs.forEach(log => {
+        var name = moment(log.when).format('MMM Do')
+        if(!aggr[name]) aggr[name] = {}
+        if(!aggr[name].logs) aggr[name].logs = []
+        aggr[name].logs.push(log)
+        aggr[name].date = name
+      })
+      res.json(Object.keys(aggr).map(key => aggr[key]))
+    })
+  })
+
 	api.use('/logs', logs({ config, db}));
   api.use('/people', people({ config, db}));
 
