@@ -20,7 +20,7 @@
             <q-item-main label="Timeline"/>
           </q-side-link>
           <q-side-link item to='/days'>
-            <q-item-side icon="fa-sun" />
+            <q-item-side icon="fa-sun-o" />
             <q-item-main label="Days"/>
           </q-side-link>
           <q-side-link item to='/calendar'>

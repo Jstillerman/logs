@@ -1,22 +1,30 @@
 <template>
   <div class="daybrowser">
-    <button @click="drawTimelines">${0}</button>
     <div v-for='day in days' class="singleday">
-      {{day.title}}
-      <div :class="day.title" style="width:200px;"></div>
+      <h3>{{day.date}}</h3>
+      Total Logs: {{day.logs.length}}<br>
+      Productivity: {{getHours(day.productivity)}}<br>
     </div>
   </div>
 </template>
 
 <script>
-import {TimeKnots} from '../timeknots.js'
+//import {TimeKnots} from '../timeknots.js'
 import axios from 'axios'
 import conf from '../config'
+import moment from 'moment'
+
+function sum (list) {
+  var count = 0
+  list.forEach(num => count += num)
+  console.log('sum', list, count)
+  return count
+}
 
 export default {
   data () {
     return {
-      days: [{title: 'today', data: {}}]
+      days: []
     }
   },
   mounted () {
@@ -25,19 +33,30 @@ export default {
   methods: {
     drawTimelines () {
       this.days.forEach(day => {
-        TimeKnots.draw('.' + day.title, day.data, {color: 'teal', width: 700, showLabels: true, labelFormat: '%Y'})
+        // TimeKnots.draw('.a' + moment(day.date).format('x') , day.data, {color: 'teal', width: 700, showLabels: true, labelFormat: '%Y'})
       })
     },
+    getHours (mins) {
+      return Math.floor(mins/60) + ' hours ' + mins % 60 + ' mins'
+    },
     refresh () {
-      axios.get(conf.API_LOC + '/api/daydata/' + Date())
+      axios.get(conf.API_LOC + '/api/daydata/')
         .then(page => {
-          console.log(page.data.logs)
-          this.days[0].data = page.data.logs.map(log => {
-            return {
-              date: log.when,
-              name: log.user + ' ' + log.action + ' ' + log.what
-            }
-          })
+          this.days = page.data.map(day => {
+            day.data = day.logs.map(log => {
+              return {
+                date: log.when,
+                name: log.user + ' ' + log.action + ' ' + log.what
+              }
+            })
+
+            day.productivity = sum(day.logs.map(log => {
+              if(log.duration) return log.duration
+              return 0
+            }))
+
+            return day
+          }).reverse()
         })
         .then(this.drawTimelines)
     }
