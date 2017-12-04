@@ -90,7 +90,7 @@ export default ({ config, db }) => {
     Log.find({}, (err, logs) => {
       var aggr = {}
       logs.forEach(log => {
-        var name = moment(log.when).add(-5, 'hours').format('MMM Do')
+        var name = moment(log.when).add(-5, 'hours').format('ddd MMM Do')
         if(!aggr[name]) aggr[name] = {}
         if(!aggr[name].logs) aggr[name].logs = []
         aggr[name].logs.push(log)
