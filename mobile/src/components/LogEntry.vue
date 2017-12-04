@@ -54,7 +54,9 @@ export default {
         {icon: 'fa-comments', text: 'I talked to...', color: 'blue', action: 'talked to'},
         {icon: 'fa-tree', text: 'I smoked...', color: 'brown', action: 'smoked'},
         {icon: 'fa-male', text: 'I tested (Athletic)...', color: 'green', action: 'performed', what: '20 pushups'},
-        {icon: 'fa-heart-o', text: 'I experienced', color: 'purple', action: 'experienced', additionalFields: ['intensity']}
+        {icon: 'fa-heart-o', text: 'I experienced', color: 'purple', action: 'experienced', additionalFields: ['intensity']},
+        {icon: 'fa-shower', text: 'I took a', what: 'shower', action: 'took a', where: 'bathroom', ongoing: true},
+        {icon: 'fa-tv', text: 'I started watching', action: 'watched', ongoing: true}
       ],
       stats: {},
       when: Date(),

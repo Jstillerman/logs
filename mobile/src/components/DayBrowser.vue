@@ -9,14 +9,14 @@
 </template>
 
 <script>
-//import {TimeKnots} from '../timeknots.js'
+// import {TimeKnots} from '../timeknots.js'
 import axios from 'axios'
 import conf from '../config'
-import moment from 'moment'
+// import moment from 'moment'
 
 function sum (list) {
   var count = 0
-  list.forEach(num => count += num)
+  list.forEach(num => { count += num })
   console.log('sum', list, count)
   return count
 }
@@ -37,7 +37,7 @@ export default {
       })
     },
     getHours (mins) {
-      return Math.floor(mins/60) + ' hours ' + mins % 60 + ' mins'
+      return Math.floor(mins / 60) + ' hours ' + mins % 60 + ' mins'
     },
     refresh () {
       axios.get(conf.API_LOC + '/api/daydata/')
@@ -51,7 +51,7 @@ export default {
             })
 
             day.productivity = sum(day.logs.map(log => {
-              if(log.duration) return log.duration
+              if (log.duration) return log.duration
               return 0
             }))
 
