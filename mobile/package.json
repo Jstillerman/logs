@@ -14,11 +14,13 @@
   "dependencies": {
     "axios": "^0.17.1",
     "babel-runtime": "^6.25.0",
+    "d3": "^4.12.0",
     "moment": "^2.19.2",
     "quasar-extras": "0.x",
     "quasar-framework": "^0.14.4",
     "vue": "^2.5.0",
     "vue-chart": "^2.0.0",
+    "vue-full-calendar": "^2.5.0",
     "vue-fullcalendar": "^1.0.9",
     "vue-hotel-datepicker": "^2.0.11",
     "vue-router": "^3.0.1",

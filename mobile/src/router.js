@@ -29,6 +29,7 @@ export default new VueRouter({
     { path: '/timeline', component: load('Timeline') },
     { path: '/stats', component: load('Stats') },
     { path: '/calendar', component: load('Calendar') },
+    { path: '/days', component: load('DayBrowser') },
     { path: '/', redirect: '/entry' },
     { path: '/hello', component: load('Hello') },
 

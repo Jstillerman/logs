@@ -2,13 +2,14 @@
   <div class="cal">
     <input v-model="shouldFilter" type="checkbox" name="" value="">
     <input v-model="actionFilter" type="text" name="" value=""><br>
-    <calendar @eventClick='handleEventClick' :events="visibleEvents"></calendar>
+    <alt-cal @eventClick='handleEventClick' :events="visibleEvents"></alt-cal>
   </div>
 
 </template>
 
 <script>
 import Calendar from 'vue-fullcalendar'
+import AltCal from 'vue-full-calendar'
 import axios from 'axios'
 import conf from '../config.json'
 import moment from 'moment'
@@ -16,7 +17,8 @@ import utils from '../utils.js'
 
 export default {
   components: {
-    Calendar
+    Calendar,
+    AltCal
   },
   data () {
     return {
@@ -52,4 +54,8 @@ export default {
 </script>
 
 <style lang="css">
+.events-day {
+  box-sizing: content-box !important;
+  margin-bottom: 5px;
+}
 </style>

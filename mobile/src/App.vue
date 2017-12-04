@@ -19,6 +19,10 @@
             <q-item-side icon="fa-list" />
             <q-item-main label="Timeline"/>
           </q-side-link>
+          <q-side-link item to='/days'>
+            <q-item-side icon="fa-sun" />
+            <q-item-main label="Days"/>
+          </q-side-link>
           <q-side-link item to='/calendar'>
             <q-item-side icon="fa-calendar" />
             <q-item-main label="Calendar"/>

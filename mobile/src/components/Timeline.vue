@@ -1,15 +1,23 @@
 <template>
   <div class="timeline">
     <div class="entry" v-for="log in logs">
+      <q-btn round @click="log.editing = !log.editing" style="float: right;" icon="fa-cog"></q-btn>
       <h2>{{log.user}} {{log.action}} {{log.what}}</h2>
-      <ul v-if="log.showData">
-        <li v-for="key in pickKeys(log)">{{key}}: {{log[key]}}</li>
-      </ul>
-      <q-btn @click="log.showData = !log.showData">{{log.showData ? 'Hide Fields': 'Show Fields'}}</q-btn>
-      <div style="margin-top: 10px; padding-bottom: 20px;">
-        <p style="float: left;">{{log.where || 'unknown'}} - {{formatDate(log.when)}}</p>
-        <p style="float: right;" v-if='log.duration'>{{log.duration}} mins</p>
-        <q-btn style="float: right;" v-if='log.ongoing'>End</q-btn>
+      <div v-if="!log.editing">
+        <img v-if="log.action=='added a'":src="log.url">
+        <ul v-if="log.showData">
+          <li v-for="key in pickKeys(log)">{{key}}: {{log[key]}}</li>
+        </ul>
+        <q-btn @click="log.showData = !log.showData">{{log.showData ? 'Hide Fields': 'Show Fields'}}</q-btn>
+        <div style="margin-top: 10px; padding-bottom: 20px;">
+          <p style="float: left;">{{log.where || 'unknown'}} - {{formatDate(log.when)}}</p>
+          <p style="float: right;" v-if='log.duration'>{{log.duration}} mins</p>
+          <q-btn style="float: right;" @click='end(log._id)' v-if='log.ongoing'>End</q-btn>
+        </div>
+      </div>
+      <div v-else>
+        <textarea v-model="log.editText" id="${4}" cols="${7:30}" rows="${11:10}">${12}</textarea>
+        <q-btn @click="update(log.editText, log)">Update</q-btn>
       </div>
     </div>
   </div>
@@ -25,7 +33,8 @@ export default {
   components: {QBtn},
   data () {
     return {
-      logs: []
+      logs: [],
+      newText: ''
     }
   },
   methods: {
@@ -37,11 +46,25 @@ export default {
         .then(logs => logs.reverse())
         .then(logs => logs.map((l) => {
           l.showData = false
+          l.editing = false
+          l.editText = JSON.stringify(l)
           return l
         }))
         .then(logs => {
           this.logs = logs
         })
+    },
+    end (id) {
+      axios.get(conf.API_LOC + '/api/logs/' + id + '/end')
+        .then(() => {
+          this.refresh()
+        })
+    },
+    update (logJSON, original) {
+      original.editing = false
+      var log = JSON.parse(logJSON)
+      axios.put(conf.API_LOC + '/api/logs/' + log._id, log)
+        .then(page => this.refresh())
     },
     pickKeys (log) {
       let keys = Object.keys(log)
