@@ -1,6 +1,6 @@
 <template>
   <div class="timeline">
-    <div class="entry" v-for="log in logs">
+    <div class="entry" v-for="log in first(5, logs)">
       <q-btn round @click="log.editing = !log.editing" style="float: right;" icon="fa-cog"></q-btn>
       <h2>{{log.user}} {{log.action}} {{log.what}}</h2>
       <div v-if="!log.editing">

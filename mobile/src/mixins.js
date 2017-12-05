@@ -10,7 +10,7 @@ export default {
     },
     end (log) {
       axios.get(conf.API_LOC + '/api/logs/' + log._id + '/end')
-        .then(this.refesh())
+        .then(this.refresh())
     },
     cancel (log) {
       log.ongoing = false
@@ -29,6 +29,9 @@ export default {
         return moment(date).fromNow()
       }
       return moment(date).format('MMM Do YY, h:mm a')
+    },
+    first (n, list) {
+      return list.slice(0, n)
     }
   }
 }

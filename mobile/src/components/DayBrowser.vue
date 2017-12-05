@@ -55,25 +55,24 @@ export default {
               }
             })
 
-
             day.productivity = {}
             day.productivity.total = sum(day.logs.map(log => {
               if (log.duration) return log.duration
               return 0
             }))
 
-            day.productivity.logs = sum(day.logs.filter(log => log.what.toLowerCase() == 'logs' && log.action == 'worked on')
-            .map(log => {
-              if (log.duration) return log.duration
-              return 0
-            }))
+            day.productivity.logs = sum(day.logs.filter(log => log.what.toLowerCase() === 'logs' && log.action === 'worked on')
+              .map(log => {
+                if (log.duration) return log.duration
+                return 0
+              }))
 
             day.stats = {}
-            day.stats.mealCount = day.logs.filter(log => log.action === "ate").length
-            day.stats.smokeCount = day.logs.filter(log => log.action === "smoked").length
+            day.stats.mealCount = day.logs.filter(log => log.action === 'ate').length
+            day.stats.smokeCount = day.logs.filter(log => log.action === 'smoked').length
 
             day.productivity.other = day.productivity.total - day.productivity.logs
-            day.productivity.types = day.logs.filter(log => log.action === "worked on").map(log => log.what)
+            day.productivity.types = day.logs.filter(log => log.action === 'worked on').map(log => log.what)
 
             return day
           }).reverse()
