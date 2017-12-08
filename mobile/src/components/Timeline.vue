@@ -12,7 +12,7 @@
         <div style="margin-top: 10px; padding-bottom: 20px;">
           <p style="float: left;">{{log.where || 'unknown'}} - {{formatDate(log.when)}}</p>
           <p style="float: right;" v-if='log.duration'>{{log.duration}} mins</p>
-          <q-btn style="float: right;" @click='end(log._id)' v-if='log.ongoing'>End</q-btn>
+          <q-btn style="float: right;" @click='end(log)' v-if='log.ongoing'>End</q-btn>
         </div>
       </div>
       <div v-else>
