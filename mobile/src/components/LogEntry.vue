@@ -16,12 +16,11 @@
         <q-btn v-for="tag in cherryPick(stats.tags)" @click="tags.push(tag)" color="info">{{tag}}</q-btn>
         <q-checkbox v-model="ongoing" label="Ongoing" />
         <q-input v-for="f in selectedOpt.additionalFields" v-model="additionalFields[f]" :float-label='f' color='red'/>
-        <p class="caption">Textbox and Textarea with No Borders</p>
         <div class="list">
           <div class="item multiple-lines item-delimiter">
             <div class="item-content">
               <!-- Notice the "no-border" CSS class -->
-              <textarea class="full-width">
+              <textarea v-model='data' class="full-width">
                 Textarea here with no border and full width.
               </textarea>
             </div>
@@ -57,7 +56,7 @@ export default {
         {icon: 'fa-heart-o', text: 'I experienced', color: 'purple', action: 'experienced', additionalFields: ['intensity']},
         {icon: 'fa-shower', text: 'I took a', what: 'shower', action: 'took a', where: 'bathroom', ongoing: true},
         {icon: 'fa-tv', text: 'I started watching', action: 'watched', ongoing: true},
-        {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true},
+        {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true}
       ],
       stats: {},
       when: Date(),
@@ -66,6 +65,7 @@ export default {
       who: [],
       what: '',
       where: '',
+      data: '',
       ongoing: false,
       additionalFields: {},
       tags: []
@@ -81,6 +81,7 @@ export default {
       this.tags = []
       this.additionalFields = {}
       this.showEntry = true
+      this.data = ''
       this.selectedOpt = opt
       this.refreshStats(opt.action)
     },
@@ -123,6 +124,7 @@ export default {
       if (this.who !== []) payload.who = this.who
       if (this.tags !== []) payload.tags = this.tags
       if (this.ongoing) payload.ongoing = true
+      if (this.data) payload.data = this.data
       Object.keys(this.additionalFields).forEach(key => {
         if (this.additionalFields[key] !== '') payload[key] = this.additionalFields[key]
       })
