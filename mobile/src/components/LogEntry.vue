@@ -7,6 +7,7 @@
         <q-input v-model="what" float-label="What" inverted>
           <q-autocomplete :static-data="predict('what')" :min-characters="1"/>
         </q-input>
+        <q-btn v-for="what in first(5, predict('what').list.map(thing => thing.value))">{{what}}</q-btn>
         <q-datetime v-model="when" type="datetime" color="secondary" float-label="When" inverted/>
         <q-input v-model="where" float-label="Where" color="tertiary" inverted>
           <q-autocomplete :static-data="predict('where')" :min-characters="1"/>
@@ -37,8 +38,10 @@
 import {QBtn, QToolbar, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QListHeader, QDatetime, QChipsInput, QInput, LocalStorage, QSideLink, QAutocomplete, QCheckbox} from 'quasar'
 import axios from 'axios'
 import conf from '../config.json'
+import mixins from '../mixins'
 
 export default {
+  mixins: [mixins],
   components: { QBtn, QToolbar, QLayout, QIcon, QItem, QItemSide, QItemMain, QList, QListHeader, QDatetime, QChipsInput, QInput, QSideLink, QAutocomplete, QCheckbox },
   data () {
     if (!LocalStorage.get.item('user')) LocalStorage.set('user', prompt('Name?'))
@@ -55,9 +58,11 @@ export default {
         {icon: 'fa-tree', text: 'I smoked...', color: 'brown', action: 'smoked'},
         {icon: 'fa-male', text: 'I tested (Athletic)...', color: 'green', action: 'performed', what: '20 pushups'},
         {icon: 'fa-heart-o', text: 'I experienced', color: 'purple', action: 'experienced', additionalFields: ['intensity']},
-        {icon: 'fa-shower', text: 'I took a', what: 'shower', action: 'took a', where: 'bathroom', ongoing: true},
-        {icon: 'fa-tv', text: 'I started watching', action: 'watched', ongoing: true},
-        {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true},
+        {icon: 'fa-shower', text: 'I took a', what: 'shower', color: 'blue', action: 'took a', where: 'bathroom', ongoing: true},
+        {icon: 'fa-tv', text: 'I started watching', action: 'watched', color: 'brown', ongoing: true},
+        {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true, additionalFields: ['destination']},
+        {icon: 'fa-hand-paper-o', text: 'I copped', action: 'copped', color: 'red', additionalFields: ['price']},
+        {icon: 'fa-cloud', text: 'I had an idea', action: 'thought', color: 'green', data: true}
       ],
       stats: {},
       when: Date(),
