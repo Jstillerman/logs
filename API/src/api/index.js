@@ -24,7 +24,7 @@ export default ({ config, db }) => {
 	let api = Router();
 
   api.get('/logs/stats', (req, res) => {
-		Log.find({}, (err, all) => {
+		Log.find({user: req.query.user}, (err, all) => {
 			if(err) return err
 			var stats = {
         freq: {},
@@ -45,7 +45,7 @@ export default ({ config, db }) => {
   })
 
   api.get('/logs/stats/:action', (req, res) => {
-    Log.find({action: req.params.action}, (err, logs) => {
+    Log.find({action: req.params.action, user: req.query.user}, (err, logs) => {
       if(err) return err
       var stats = {}
       stats.attrs = []
@@ -74,7 +74,7 @@ export default ({ config, db }) => {
     var d = moment(req.params.time).startOf('day').hours(5)
     console.log(req.params.time, d);
 // TODO: Get This shit to actually work. when is all strings and it needs to be dates...
-    Log.find({"when": {"$gte": d.toDate(), "$lt": d.add(1, 'days').toDate()}}, (err, logs) => {
+    Log.find({"when": {"$gte": d.toDate(), "$lt": d.add(1, 'days').toDate()}, user: req.query.user}, (err, logs) => {
       if(err) res.err(err)
       console.log('logs found:', logs.length);
       let status = {}
@@ -87,7 +87,7 @@ export default ({ config, db }) => {
   })
 
   api.get('/daydata/', (req, res) => {
-    Log.find({}, (err, logs) => {
+    Log.find({user: req.query.user}, (err, logs) => {
       var aggr = {}
       logs.forEach(log => {
         var name = moment(log.when).add(-5, 'hours').format('ddd MMM Do')
