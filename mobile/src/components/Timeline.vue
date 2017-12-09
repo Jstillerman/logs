@@ -46,6 +46,7 @@ export default {
         .then(page => page.data.sort((a, b) => {
           return moment.utc(a.when).diff(moment.utc(b.when))
         }))
+        .then(logs => logs.filter(log => log.user === this.getUser()))
         .then(logs => logs.reverse())
         .then(logs => logs.map((l) => {
           l.showData = false

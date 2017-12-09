@@ -6,7 +6,7 @@
       <p>{{formatDate(event.when)}}</p>
       <q-btn @click="end(event)">End</q-btn>
       <q-btn @click="cancel(event)">Cancel</q-btn>
-      
+
     </div>
   </div>
 </template>
@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     refresh () {
-      axios.get(conf.API_LOC + '/api/logs?ongoing=true')
+      axios.get(conf.API_LOC + '/api/logs?ongoing=true&user=' + this.getUser())
         .then(page => {
           this.events = page.data
         })

@@ -5,16 +5,16 @@
       <div v-if="showEntry">
         <h3>{{selectedOpt.text}}</h3>
         <q-input v-model="what" float-label="What" inverted>
-          <q-autocomplete :static-data="predict('what')" :min-characters="1"/>
+          <q-autocomplete v-if="stats" :static-data="predict('what')" :min-characters="1"/>
         </q-input>
         <q-btn v-for="what in first(5, predict('what').list.map(thing => thing.value))">{{what}}</q-btn>
         <q-datetime v-model="when" type="datetime" color="secondary" float-label="When" inverted/>
         <q-input v-model="where" float-label="Where" color="tertiary" inverted>
-          <q-autocomplete :static-data="predict('where')" :min-characters="1"/>
+          <q-autocomplete v-if="stats" :static-data="predict('where')" :min-characters="1"/>
         </q-input>
         <q-chips-input v-model="who" float-label="Who" color="positive" inverted />
         <q-chips-input v-model="tags" float-label="Tags" color="info" inverted />
-        <q-btn v-for="tag in cherryPick(stats.tags)" @click="tags.push(tag)" color="info">{{tag}}</q-btn>
+        <q-btn v-if='stats' v-for="tag in cherryPick(stats.tags)" @click="tags.push(tag)" color="info">{{tag}}</q-btn>
         <q-checkbox v-model="ongoing" label="Ongoing" />
         <q-input v-for="f in selectedOpt.additionalFields" v-model="additionalFields[f]" :float-label='f' color='red'/>
         <div class="list">
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import {QBtn, QToolbar, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QListHeader, QDatetime, QChipsInput, QInput, LocalStorage, QSideLink, QAutocomplete, QCheckbox} from 'quasar'
+import {QBtn, QToolbar, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QListHeader, QDatetime, QChipsInput, QInput, QSideLink, QAutocomplete, QCheckbox} from 'quasar'
 import axios from 'axios'
 import conf from '../config.json'
 import mixins from '../mixins'
@@ -43,10 +43,8 @@ export default {
   mixins: [mixins],
   components: { QBtn, QToolbar, QLayout, QIcon, QItem, QItemSide, QItemMain, QList, QListHeader, QDatetime, QChipsInput, QInput, QSideLink, QAutocomplete, QCheckbox },
   data () {
-    if (!LocalStorage.get.item('user')) LocalStorage.set('user', prompt('Name?'))
-    let usr = LocalStorage.get.item('user')
     return {
-      user: usr,
+      user: this.getUser(),
       options: [
         {icon: 'fa-cutlery', text: 'I ate...', action: 'ate', color: 'green', extraOpts: {pointColor: 'blue'}},
         {icon: 'fa-eye', text: 'I saw...', color: 'blue', action: 'saw'},
@@ -91,16 +89,21 @@ export default {
       this.refreshStats(opt.action)
     },
     predict (field) {
-      let l = Object.keys(this.stats[field])
-        .sort((a, b) => this[field][b] - this[field][a]) // sort by frequency
-        .filter(t => t !== '') // filter out blanks
-        .map(p => {
-          return {
-            value: p,
-            label: p,
-            sublabel: 'Count: ' + this.stats[field][p]
-          }
-        })
+      let l = []
+      if(Object.keys(this.stats).length > 1){ // if the stats aren't empty (empty stats still have attrs)
+        l = Object.keys(this.stats[field])
+          .sort((a, b) => this[field][b] - this[field][a]) // sort by frequency
+          .filter(t => t !== '') // filter out blanks
+          .map(p => {
+            return {
+              value: p,
+              label: p,
+              sublabel: 'Count: ' + this.stats[field][p]
+            }
+          })
+      } else {
+        l = []
+      }
       return {
         field: 'value',
         list: l
@@ -114,8 +117,10 @@ export default {
         .slice(0, 5) // Get only the first three items
     },
     refreshStats (action) {
-      axios.get(conf.API_LOC + '/api/logs/stats/' + action)
-        .then(page => { this.stats = page.data })
+      axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
+        .then(page => {
+            this.stats = page.data
+        })
     },
     log () {
       var payload = {

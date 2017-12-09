@@ -1,6 +1,7 @@
 import conf from './config'
 import axios from 'axios'
 import moment from 'moment'
+import {LocalStorage} from 'quasar'
 
 export default {
   methods: {
@@ -23,6 +24,10 @@ export default {
           console.log('put complete')
           this.refresh()
         })
+    },
+    getUser () {
+      if (!LocalStorage.get.item('user')) LocalStorage.set('user', prompt('Name?'))
+      return LocalStorage.get.item('user')
     },
     formatDate (date) {
       if (moment(Date()).diff(moment(date)) < 105850000) {

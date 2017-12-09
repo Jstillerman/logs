@@ -17,6 +17,7 @@
 // import {TimeKnots} from '../timeknots.js'
 import axios from 'axios'
 import conf from '../config'
+import mixins from '../mixins'
 // import moment from 'moment'
 
 function sum (list) {
@@ -27,6 +28,7 @@ function sum (list) {
 }
 
 export default {
+  mixins: [mixins],
   data () {
     return {
       days: []
@@ -45,7 +47,7 @@ export default {
       return Math.floor(mins / 60) + ' hours ' + mins % 60 + ' mins'
     },
     refresh () {
-      axios.get(conf.API_LOC + '/api/daydata/')
+      axios.get(conf.API_LOC + '/api/daydata?user=' + this.getUser())
         .then(page => {
           this.days = page.data.map(day => {
             day.data = day.logs.map(log => {
