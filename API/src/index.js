@@ -51,7 +51,7 @@ initializeDb( db => {
 		console.log(req.body)
 		let newLogs = []
 		req.body.forEach((log) => {
-			Log.count({url: log.url}, function(err, count){
+			Log.count({photo: log.photo}, function(err, count){
 				if(count == 0){
 					Log.create(log, (err, l) => newLogs.push(l))
 				}
