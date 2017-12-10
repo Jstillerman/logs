@@ -49,12 +49,15 @@ initializeDb( db => {
 	})
 	app.post('/photoHook', (req, res) => {
 		console.log(req.body)
+		let newLogs = []
 		req.body.forEach((log) => {
 			Log.count({url: log.url}, function(err, count){
-				if(count == 0) Log.create(log)
+				if(count == 0){
+					Log.create(log, (err, l) => newLogs.push(l))
+				}
 			})
 		})
-		res.sendStatus(200)
+		res.json(newLogs)
 	})
 	app.server.listen(process.env.PORT || config.port, () => {
 		console.log(`Started on port ${app.server.address().port}`);
