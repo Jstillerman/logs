@@ -6,6 +6,7 @@ var Log = mongoose.model('Log', {
 	what: String,
 	where: String,
 	when: Date,
+	photo: String,
 	ongoing: Boolean,
 	intensity: Number,
 	price: Number,
