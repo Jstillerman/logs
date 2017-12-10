@@ -30,6 +30,12 @@ export default ({ config }) => {
 		/** POST / - Create a new entity */
 		create({ body }, res) {
 			//body.id = logs.length.toString(36);
+			if (body.action === 'added the song') { //if its from spotify ifttt
+				let guts = body.when.split(' ') // [ 'December', '9,', '2017', 'at', '08:38PM' ]
+				let hours = parseInt(guts[4].substring(0, 2)) + (guts[4][5] === "P" ? 12 : 0) // get the hours and if its PM, add 12
+				let mins = parseInt(guts[4].substring(3, 5)) // parse minutes
+				body.when = moment().month(guts[0]).date(guts[1]).year(guts[2]).hour(hours).minute(mins).format()
+			}
 			let loggy = new Log(body)
 			loggy.save(function(err, obj){
 				if(err) res.error(err)
