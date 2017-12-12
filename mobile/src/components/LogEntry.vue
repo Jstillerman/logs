@@ -49,7 +49,7 @@ export default {
         {icon: 'fa-cutlery', text: 'I ate...', action: 'ate', color: 'green', extraOpts: {pointColor: 'blue'}},
         {icon: 'fa-eye', text: 'I saw...', color: 'blue', action: 'saw'},
         {icon: 'fa-shopping-cart', text: 'I bought...', color: 'red', action: 'bought', additionalFields: ['price']},
-        {icon: 'fa-briefcase', text: 'I worked on...', color: 'purple', action: 'worked on'},
+        {icon: 'fa-briefcase', text: 'I worked on...', color: 'purple', action: 'worked on', ongoing: true},
         {icon: 'fa-sticky-note', text: 'New Journal Entry', color: 'orange', action: 'wrote', what: 'a note', data: true},
         {icon: 'fa-comments', text: 'I talked to...', color: 'blue', action: 'talked to'},
         {icon: 'fa-tree', text: 'I smoked...', color: 'brown', action: 'smoked'},
@@ -59,7 +59,9 @@ export default {
         {icon: 'fa-tv', text: 'I started watching', action: 'watched', color: 'brown', ongoing: true},
         {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true, additionalFields: ['destination']},
         {icon: 'fa-hand-paper-o', text: 'I copped', action: 'copped', color: 'red', additionalFields: ['price']},
-        {icon: 'fa-cloud', text: 'I had an idea', action: 'thought', color: 'green', data: true}
+        {icon: 'fa-cloud', text: 'I had an idea', action: 'thought', color: 'green'},
+        {icon: 'fa-book', text: 'I learned...', action: 'learned', color: 'pink'},
+        {icon: 'fa-paw', text: 'I walked...', action: 'walked', color: 'brown', ongoing: true}
       ],
       stats: {},
       when: Date(),
@@ -90,7 +92,7 @@ export default {
     },
     predict (field) {
       let l = []
-      if(Object.keys(this.stats).length > 1){ // if the stats aren't empty (empty stats still have attrs)
+      if (Object.keys(this.stats).length > 1) { // if the stats aren't empty (empty stats still have attrs)
         l = Object.keys(this.stats[field])
           .sort((a, b) => this[field][b] - this[field][a]) // sort by frequency
           .filter(t => t !== '') // filter out blanks
@@ -101,7 +103,8 @@ export default {
               sublabel: 'Count: ' + this.stats[field][p]
             }
           })
-      } else {
+      }
+      else {
         l = []
       }
       return {
@@ -119,7 +122,7 @@ export default {
     refreshStats (action) {
       axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
         .then(page => {
-            this.stats = page.data
+          this.stats = page.data
         })
     },
     log () {

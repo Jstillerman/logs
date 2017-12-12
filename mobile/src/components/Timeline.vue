@@ -1,10 +1,14 @@
 <template>
   <div class="timeline">
-    <div class="entry" v-for="log in first(5, logs)">
+    <div class="entry" v-for="log in first(50, logs)">
       <q-btn round @click="log.editing = !log.editing" style="float: right;" icon="fa-cog"></q-btn>
       <h2>{{log.user}} {{log.action}} {{log.what}}</h2>
       <div v-if="!log.editing">
         <img v-if="log.action=='added a'":src="log.url">
+        <div v-if="log.photo">
+          <img style="width: 200px; height: auto;":src="log.photo">
+          <br>
+        </div>
         <ul v-if="log.showData">
           <li v-for="key in pickKeys(log)">{{key}}: {{log[key]}}</li>
         </ul>
@@ -16,7 +20,7 @@
         </div>
       </div>
       <div v-else>
-        <textarea v-model="log.editText" id="${4}" cols="${7:30}" rows="${11:10}">${12}</textarea>
+        <textarea v-model="log.editText" cols="7:30" rows="11:10"></textarea>
         <q-btn @click="put(JSON.parse(log.editText))">Update</q-btn>
         <q-btn @click="del(log)">Delete</q-btn>
       </div>
