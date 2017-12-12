@@ -52,8 +52,16 @@ export default ({ config, db }) => {
       logs.forEach(log => {
         Object.keys(log.toObject()).forEach(key => {
           if(stats.attrs.indexOf(key) == -1) stats.attrs.push(key)
-          let val = log[key].toString().toLowerCase()
-          if(key != "_id"){
+          if(key === 'who' || key === 'where') {
+            let vals = log[key] // theses are arrays
+            vals.forEach(val => {
+              if(!stats[key]) stats[key] = {}
+              if(!stats[key][val]) stats[key][val] = 0
+              stats[key][val] ++
+            })
+          }
+          else if(key != "_id"){
+            let val = log[key].toString().toLowerCase()
             if(!stats[key]) stats[key] = {}
             if(!stats[key][val]) stats[key][val] = 0
             stats[key][val] ++
