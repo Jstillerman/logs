@@ -52,11 +52,11 @@ export default ({ config, db }) => {
       logs.forEach(log => {
         Object.keys(log.toObject()).forEach(key => {
           if(stats.attrs.indexOf(key) == -1) stats.attrs.push(key)
-          let keyLower = key.toLowerCase()
+          let val = log[key].toLowerCase()
           if(key != "_id"){
-            if(!stats[keyLower]) stats[keyLower] = {}
-            if(!stats[keyLower][log[key]]) stats[keyLower][log[key]] = 0
-            stats[keyLower][log[key]] ++
+            if(!stats[key]) stats[key] = {}
+            if(!stats[key][val]) stats[key][val] = 0
+            stats[key][val] ++
           }
 
         })
