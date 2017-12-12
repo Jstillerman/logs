@@ -32,9 +32,9 @@ export default ({ config }) => {
 			//body.id = logs.length.toString(36);
 			if (body.action === 'added the song') { //if its from spotify ifttt
 				let guts = body.when.split(' ') // [ 'December', '9,', '2017', 'at', '08:38PM' ]
-				let hours = parseInt(guts[4].substring(0, 2)) + (guts[4][5] === "P" ? 12 : 0) // get the hours and if its PM, add 12
+				let hours = parseInt(guts[4].substring(0, 2)) + (guts[4][5] === "P" ? 12 : 0) - 19// get the hours and if its PM, add 12, subtract 19 for timezone
 				let mins = parseInt(guts[4].substring(3, 5)) // parse minutes
-				body.when = moment().month(guts[0]).date(parseInt(guts[1])).year(guts[2]).hour(hours).minute(mins).utc()
+				body.when = moment().month(guts[0]).date(parseInt(guts[1][1])).year(guts[2]).hour(hours).minute(mins).toDate()
 			}
 			let loggy = new Log(body)
 			loggy.save(function(err, obj){
