@@ -1,5 +1,32 @@
 <template>
   <div class="timeline">
+    <q-card v-for="log in first(100, logs)">
+      <q-card-media v-if="log.photo">
+        <img :src="log.photo">
+      </q-card-media>
+      <q-card-title>
+        {{log.user}} {{log.action}} {{log.what || ''}}
+        <q-chip v-if="log.ongoing" pointing="left" color="primary">Ongoing</q-chip>
+      </q-card-title>
+      <q-card-main>
+        <p class="text-faded" v-if="log.data && log.data != ''">{{log.data}}</p>
+        <div>
+          <div v-for="prop in pickKeys(log)">
+            <q-icon :name="getIcon(prop)"/>
+            {{format(prop, log[prop])}}
+            <br>
+          </div>
+        </div>
+      </q-card-main>
+      <q-card-actions>
+        <q-btn flat v-if='log.ongoing' color="primary">End</q-btn>
+        <q-btn flat>Comment</q-btn>
+        <q-btn flat>Share</q-btn>
+        <q-btn flat>Edit</q-btn>
+        <q-btn flat color="negative" style="align-self: right;">Delete</q-btn>
+      </q-card-actions>
+      <q-card-separator/>
+    </q-card>
     <div class="entry" v-for="log in first(50, logs)">
       <q-btn round @click="log.editing = !log.editing" style="float: right;" icon="fa-cog"></q-btn>
       <h2>{{log.user}} {{log.action}} {{log.what}}</h2>
@@ -32,12 +59,12 @@
 import axios from 'axios'
 import conf from '../config.json'
 import moment from 'moment'
-import {QBtn} from 'quasar'
+import {QBtn, QCard, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCardMedia, QChip} from 'quasar'
 import mixins from '../mixins'
 
 export default {
   mixins: [mixins],
-  components: {QBtn},
+  components: {QBtn, QCard, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCardMedia, QChip},
   data () {
     return {
       logs: [],
@@ -70,9 +97,16 @@ export default {
     },
     pickKeys (log) {
       let keys = Object.keys(log)
+      let blacklist = ['__v', 'showData', 'editing', 'editText', '_id', 'what', 'action', 'ongoing', 'tags']
       return keys.filter(k => {
-        return k !== '__v' && k !== 'showData' && log[k] !== '' && log[k] !== []
+        return (!blacklist.includes(k) && log[k] !== '' && log[k] !== [])
       })
+    },
+    format (prop, val) {
+      if (prop === 'when' || prop === 'endTime') {
+        return this.formatDate(val)
+      }
+      return val
     },
     formatDate (date) {
       if (moment(Date()).diff(moment(date)) < 105850000) return moment(date).fromNow()

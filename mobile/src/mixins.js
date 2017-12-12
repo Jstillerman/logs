@@ -25,6 +25,25 @@ export default {
           this.refresh()
         })
     },
+    getHours (mins) {
+      let hours = Math.floor(mins / 60)
+      let s = ''
+      if (hours > 0) s = hours + ' hours'
+      return s + mins % 60 + ' mins'
+    },
+    getIcon (name) {
+      let icons = {
+        where: 'location on',
+        when: 'access time',
+        duration: 'timer',
+        who: 'person',
+        user: 'person',
+        price: 'attach money',
+        endTime: 'stop'
+      }
+      if (icons[name]) return icons[name]
+      return 'crop square'
+    },
     getUser () {
       if (!LocalStorage.get.item('user')) LocalStorage.set('user', prompt('Name?'))
       return LocalStorage.get.item('user')
@@ -37,6 +56,12 @@ export default {
     },
     first (n, list) {
       return list.slice(0, n)
+    },
+    isValidDate (str) {
+      if (typeof str !== 'string') return false
+      var d = moment(str, 'D/M/YYYY')
+      if (d == null || !d.isValid()) return false
+      return true
     }
   }
 }

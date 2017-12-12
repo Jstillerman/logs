@@ -43,9 +43,6 @@ export default {
         // TimeKnots.draw('.a' + moment(day.date).format('x') , day.data, {color: 'teal', width: 700, showLabels: true, labelFormat: '%Y'})
       })
     },
-    getHours (mins) {
-      return Math.floor(mins / 60) + ' hours ' + mins % 60 + ' mins'
-    },
     refresh () {
       axios.get(conf.API_LOC + '/api/daydata?user=' + this.getUser())
         .then(page => {
