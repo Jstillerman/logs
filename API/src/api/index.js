@@ -31,8 +31,9 @@ export default ({ config, db }) => {
         timeline: {}
       }
 			all.forEach(log => {
-				if(!stats.freq[log.action]) stats.freq[log.action] = 0
-				stats.freq[log.action] ++
+        let action = log.action.toLowerCase()
+				if(!stats.freq[action]) stats.freq[action] = 0
+				stats.freq[action] ++
 			})
 
       all.forEach(log => {
