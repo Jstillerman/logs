@@ -1,20 +1,22 @@
 <template>
   <div class="">
     <div class="container">
-      <q-btn round v-for="opt in options" style="margin: 10px" @click="select(opt)" :color="opt.color" :icon="opt.icon" />
+      <q-btn round v-for="opt in options" style="margin-right: 10px; margin-bottom: 20px;" @click="select(opt)" :color="opt.color" :icon="opt.icon" />
       <div v-if="showEntry">
         <h3>{{selectedOpt.text}}</h3>
         <q-input v-model="what" float-label="What" inverted>
-          <q-autocomplete v-if="stats" :static-data="predict('what')" :min-characters="1"/>
+          <q-autocomplete v-if="stats" :static-data="getAutocomplete('what')" :min-characters="1"/>
         </q-input>
-        <q-btn v-for="what in first(5, predict('what').list.map(thing => thing.value))">{{what}}</q-btn>
+        <q-btn @click="what = whah" v-for="whah in first(5, predict('what'))">{{whah}}</q-btn>
         <q-datetime v-model="when" type="datetime" color="secondary" float-label="When" inverted/>
         <q-input v-model="where" float-label="Where" color="tertiary" inverted>
-          <q-autocomplete v-if="stats" :static-data="predict('where')" :min-characters="1"/>
+          <q-autocomplete v-if="stats" :static-data="getAutocomplete('where')" :min-characters="1"/>
         </q-input>
+        <q-btn @click="where = place" v-for="place in first(5, predict('where'))">{{place}}</q-btn>
         <q-chips-input v-model="who" float-label="Who" color="positive" inverted />
+        <q-btn v-for="whom in first(5, predict('who'))" @click="who.push(whom)">{{whom}}</q-btn>
         <q-chips-input v-model="tags" float-label="Tags" color="info" inverted />
-        <q-btn v-if='stats' v-for="tag in cherryPick(stats.tags)" @click="tags.push(tag)" color="info">{{tag}}</q-btn>
+        <q-btn v-if='stats' v-for="tag in first(5, predict('tags'))" @click="tags.push(tag)">{{tag}}</q-btn>
         <q-checkbox v-model="ongoing" label="Ongoing" />
         <q-input v-for="f in selectedOpt.additionalFields" v-model="additionalFields[f]" :float-label='f' color='red'/>
         <div class="list">
@@ -38,6 +40,7 @@ import {QBtn, QToolbar, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QLis
 import axios from 'axios'
 import conf from '../config.json'
 import mixins from '../mixins'
+import actions from '../actions'
 
 export default {
   mixins: [mixins],
@@ -45,24 +48,7 @@ export default {
   data () {
     return {
       user: this.getUser(),
-      options: [
-        {icon: 'fa-cutlery', text: 'I ate...', action: 'ate', color: 'green', extraOpts: {pointColor: 'blue'}},
-        {icon: 'fa-eye', text: 'I saw...', color: 'blue', action: 'saw'},
-        {icon: 'fa-shopping-cart', text: 'I bought...', color: 'red', action: 'bought', additionalFields: ['price']},
-        {icon: 'fa-briefcase', text: 'I worked on...', color: 'purple', action: 'worked on', ongoing: true},
-        {icon: 'fa-sticky-note', text: 'New Journal Entry', color: 'orange', action: 'wrote', what: 'a note', data: true},
-        {icon: 'fa-comments', text: 'I talked to...', color: 'blue', action: 'talked to'},
-        {icon: 'fa-tree', text: 'I smoked...', color: 'brown', action: 'smoked'},
-        {icon: 'fa-male', text: 'I tested (Athletic)...', color: 'green', action: 'performed', what: '20 pushups'},
-        {icon: 'fa-heart-o', text: 'I experienced', color: 'purple', action: 'experienced', additionalFields: ['intensity']},
-        {icon: 'fa-shower', text: 'I took a', what: 'shower', color: 'blue', action: 'took a', where: 'bathroom', ongoing: true},
-        {icon: 'fa-tv', text: 'I started watching', action: 'watched', color: 'brown', ongoing: true},
-        {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true, additionalFields: ['destination']},
-        {icon: 'fa-hand-paper-o', text: 'I copped', action: 'copped', color: 'red', additionalFields: ['price']},
-        {icon: 'fa-cloud', text: 'I had an idea', action: 'thought', color: 'green'},
-        {icon: 'fa-book', text: 'I learned...', action: 'learned', color: 'pink'},
-        {icon: 'fa-paw', text: 'I walked...', action: 'walked', color: 'brown', ongoing: true}
-      ],
+      options: actions.getActions(),
       stats: {},
       when: Date(),
       showEntry: false,
@@ -91,25 +77,29 @@ export default {
       this.refreshStats(opt.action)
     },
     predict (field) {
-      let l = []
       if (Object.keys(this.stats).length > 1) { // if the stats aren't empty (empty stats still have attrs)
-        l = Object.keys(this.stats[field])
-          .sort((a, b) => this[field][b] - this[field][a]) // sort by frequency
+        return (Object.keys(this.stats[field] || {}))
           .filter(t => t !== '') // filter out blanks
-          .map(p => {
-            return {
-              value: p,
-              label: p,
-              sublabel: 'Count: ' + this.stats[field][p]
-            }
-          })
+          .sort((a, b) => this.stats[field][b] - this.stats[field][a])
       }
-      else {
-        l = []
-      }
+      return []
+    },
+    getAutocomplete (field) {
+      let prediction = this.predict(field)
+      console.log(prediction)
+      let formatted = prediction.map(p => {
+        return {
+          value: p,
+          label: p,
+          sublabel: 'Count: ' + this.stats[field][p]
+        }
+      })
+
+
+
       return {
         field: 'value',
-        list: l
+        list: formatted
       }
     },
     cherryPick (tags) {
@@ -153,5 +143,8 @@ export default {
 </script>
 
 <style>
+ .container {
+   margin: 20px;
+ }
 
 </style>

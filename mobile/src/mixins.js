@@ -48,6 +48,12 @@ export default {
       if (!LocalStorage.get.item('user')) LocalStorage.set('user', prompt('Name?'))
       return LocalStorage.get.item('user')
     },
+    getSettings () {
+      if (!LocalStorage.get.item('settings')) {
+        LocalStorage.set('settings', { HideNSFW: false })
+      }
+      return LocalStorage.get.item('settings')
+    },
     formatDate (date) {
       if (moment(Date()).diff(moment(date)) < 105850000) {
         return moment(date).fromNow()

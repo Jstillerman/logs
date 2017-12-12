@@ -35,6 +35,10 @@
             <q-item-side icon="fa-bar-chart" />
             <q-item-main label="Stats"/>
           </q-side-link>
+          <q-side-link item to='/settings'>
+            <q-item-side icon="fa-cog" />
+            <q-item-main label="Settings"/>
+          </q-side-link>
         </q-list>
       </div>
       <router-view />

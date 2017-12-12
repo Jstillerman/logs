@@ -1,6 +1,9 @@
 <template>
   <div class="timeline">
-    <q-card v-for="log in first(100, logs)">
+    <div v-if="logs.length === 0">
+      <fingerprint-spinner class="center" :animation-duration="700" :size="64" :color="'#027be3'"/>
+    </div>
+    <q-card v-else v-for="log in filter(first(100, logs))" style="margin: 20px;">
       <q-card-media v-if="log.photo">
         <img :src="log.photo">
       </q-card-media>
@@ -18,40 +21,15 @@
           </div>
         </div>
       </q-card-main>
+      <q-card-separator/>
       <q-card-actions>
-        <q-btn flat v-if='log.ongoing' color="primary">End</q-btn>
+        <q-btn flat v-if='log.ongoing' @click="end(log)" color="primary">End</q-btn>
         <q-btn flat>Comment</q-btn>
         <q-btn flat>Share</q-btn>
         <q-btn flat>Edit</q-btn>
-        <q-btn flat color="negative" style="align-self: right;">Delete</q-btn>
+        <q-btn flat color="negative" @click="del(log)" style="align-self: right;">Delete</q-btn>
       </q-card-actions>
-      <q-card-separator/>
     </q-card>
-    <div class="entry" v-for="log in first(50, logs)">
-      <q-btn round @click="log.editing = !log.editing" style="float: right;" icon="fa-cog"></q-btn>
-      <h2>{{log.user}} {{log.action}} {{log.what}}</h2>
-      <div v-if="!log.editing">
-        <img v-if="log.action=='added a'":src="log.url">
-        <div v-if="log.photo">
-          <img style="width: 200px; height: auto;":src="log.photo">
-          <br>
-        </div>
-        <ul v-if="log.showData">
-          <li v-for="key in pickKeys(log)">{{key}}: {{log[key]}}</li>
-        </ul>
-        <q-btn @click="log.showData = !log.showData">{{log.showData ? 'Hide Fields': 'Show Fields'}}</q-btn>
-        <div style="margin-top: 10px; padding-bottom: 20px;">
-          <p style="float: left;">{{log.where || 'unknown'}} - {{formatDate(log.when)}}</p>
-          <p style="float: right;" v-if='log.duration'>{{log.duration}} mins</p>
-          <q-btn style="float: right;" @click='end(log)' v-if='log.ongoing'>End</q-btn>
-        </div>
-      </div>
-      <div v-else>
-        <textarea v-model="log.editText" cols="7:30" rows="11:10"></textarea>
-        <q-btn @click="put(JSON.parse(log.editText))">Update</q-btn>
-        <q-btn @click="del(log)">Delete</q-btn>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -61,10 +39,11 @@ import conf from '../config.json'
 import moment from 'moment'
 import {QBtn, QCard, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCardMedia, QChip} from 'quasar'
 import mixins from '../mixins'
+import {AtomSpinner, FingerprintSpinner} from 'epic-spinners'
 
 export default {
   mixins: [mixins],
-  components: {QBtn, QCard, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCardMedia, QChip},
+  components: {QBtn, QCard, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCardMedia, QChip, AtomSpinner, FingerprintSpinner},
   data () {
     return {
       logs: [],
@@ -99,7 +78,7 @@ export default {
       let keys = Object.keys(log)
       let blacklist = ['__v', 'showData', 'editing', 'editText', '_id', 'what', 'action', 'ongoing', 'tags']
       return keys.filter(k => {
-        return (!blacklist.includes(k) && log[k] !== '' && log[k] !== [])
+        return (!blacklist.includes(k) && log[k].length !== 0)
       })
     },
     format (prop, val) {
@@ -107,6 +86,13 @@ export default {
         return this.formatDate(val)
       }
       return val
+    },
+    filter (logs) {
+      console.log('filtering!')
+      if (!this.getSettings().HideNSFW) return logs
+      return logs.filter(log => {
+        return log.action !== 'smoked' && log.action !== 'copped' && !(log.action === 'bought' && log.what === 'weed')
+      })
     },
     formatDate (date) {
       if (moment(Date()).diff(moment(date)) < 105850000) return moment(date).fromNow()
@@ -132,6 +118,10 @@ export default {
 .entry h2 {
   font-size: 20pt;
   font-weight: 600;
+}
+
+.center {
+  margin: 40px;
 }
 
 </style>

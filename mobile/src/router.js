@@ -32,6 +32,7 @@ export default new VueRouter({
     { path: '/days', component: load('DayBrowser') },
     { path: '/ongoing', component: load('Ongoing') },
     { path: '/', redirect: '/entry' },
+    { path: '/settings', component: load('Settings') },
     { path: '/hello', component: load('Hello') },
 
     // Always leave this last one

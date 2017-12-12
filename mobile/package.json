@@ -17,6 +17,7 @@
     "chart.js": "^2.7.1",
     "chartkick": "^2.2.4",
     "d3": "^4.12.0",
+    "epic-spinners": "^1.0.0",
     "moment": "^2.19.2",
     "quasar-extras": "0.x",
     "quasar-framework": "^0.14.4",
