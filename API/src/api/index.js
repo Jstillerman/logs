@@ -31,9 +31,8 @@ export default ({ config, db }) => {
         timeline: {}
       }
 			all.forEach(log => {
-        let action = log.action.toLowerCase()
-				if(!stats.freq[action]) stats.freq[action] = 0
-				stats.freq[action] ++
+				if(!stats.freq[log.action]) stats.freq[log.action] = 0
+				stats.freq[log.action] ++
 			})
 
       all.forEach(log => {
@@ -51,8 +50,7 @@ export default ({ config, db }) => {
       var stats = {}
       stats.attrs = []
       logs.forEach(log => {
-        for (var key in log.toObject()) {
-          //console.log(`log.${prop} = ${log[prop]}`);
+        Object.keys(log.toObject()).forEach(key => {
           key = key.toLowerCase()
           if(stats.attrs.indexOf(key) == -1) stats.attrs.push(key)
           if(key != "_id"){
@@ -61,7 +59,7 @@ export default ({ config, db }) => {
             stats[key][log[key]] ++
           }
 
-        }
+        })
       })
       res.json(stats)
     })
