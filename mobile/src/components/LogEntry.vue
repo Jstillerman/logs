@@ -94,9 +94,6 @@ export default {
           sublabel: 'Count: ' + this.stats[field][p]
         }
       })
-
-
-
       return {
         field: 'value',
         list: formatted

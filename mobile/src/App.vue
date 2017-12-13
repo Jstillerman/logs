@@ -23,10 +23,6 @@
             <q-item-side icon="fa-sun-o" />
             <q-item-main label="Days"/>
           </q-side-link>
-          <q-side-link item to='/ongoing'>
-            <q-item-side icon="fa-clock-o" />
-            <q-item-main label="Ongoing"/>
-          </q-side-link>
           <q-side-link item to='/calendar'>
             <q-item-side icon="fa-calendar" />
             <q-item-main label="Calendar"/>

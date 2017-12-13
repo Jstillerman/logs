@@ -28,7 +28,9 @@ export default {
     getHours (mins) {
       let hours = Math.floor(mins / 60)
       let s = ''
-      if (hours > 0) s = hours + ' hours'
+      if (hours > 0) s = hours + ' hour'
+      if (hours > 1) s += 's'
+      s += ' '
       return s + mins % 60 + ' mins'
     },
     getIcon (name) {

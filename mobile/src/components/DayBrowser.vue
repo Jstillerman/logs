@@ -1,5 +1,23 @@
 <template>
   <div class="daybrowser">
+    <q-card v-for="day in days">
+      <q-card-title>{{day.date}}</q-card-title>
+      <q-card-main>
+        Total Logs: {{day.logs.length}}<br>
+        Productivity: {{getHours(day.productivity.total)}}<br>
+        Logs Productivity: {{getHours(day.productivity.logs)}}<br>
+        Other Productivity: {{getHours(day.productivity.other)}}<br>
+        Productivity Types: {{day.productivity.types}}<br>
+        Things Eaten: {{day.stats.mealCount}}<br>
+        <div v-if="!getSettings().HideNSFW">
+          Times Smoked: {{day.stats.smokeCount}}
+        </div>
+      </q-card-main>
+      <q-card-separator/>
+      <q-card-actions>
+        <q-btn flat>Jump</q-btn>
+      </q-card-actions>
+    </q-card>
     <div v-for='day in days' class="singleday">
       <h3>{{day.date}}</h3>
       Total Logs: {{day.logs.length}}<br>
@@ -18,6 +36,7 @@
 import axios from 'axios'
 import conf from '../config'
 import mixins from '../mixins'
+import {QCard, QCardTitle, QCardActions, QCardMain, QBtn, QCardSeparator} from 'quasar'
 // import moment from 'moment'
 
 function sum (list) {
@@ -29,6 +48,7 @@ function sum (list) {
 
 export default {
   mixins: [mixins],
+  components: {QCard, QCardTitle, QCardActions, QCardMain, QBtn, QCardSeparator},
   data () {
     return {
       days: []
