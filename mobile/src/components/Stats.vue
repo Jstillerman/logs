@@ -7,6 +7,16 @@
     <v-select v-model="actionKey" :options="actionData.attrs"></v-select>
     <pie-chart :data="actionData[actionKey]"></pie-chart>
     <scatter-chart :data="scatterData" xtitle="Size" ytitle="Population"></scatter-chart>
+    <q-card>
+      <q-card-title>
+        Daily Count Tracker
+      </q-card-title>
+      <q-card-main>
+        <v-select v-model="dailyTracker" :options="Object.keys(stats.freq || {})"></v-select>
+        <br>
+        <line-chart :data="getLineChartData()"></line-chart>
+      </q-card-main>
+    </q-card>
   </div>
 </template>
 
@@ -16,6 +26,7 @@ import eventHub from '../EventHub.js'
 import conf from '../config.json'
 import vSelect from 'vue-select'
 import mixins from '../mixins'
+import {QCard, QCardMain, QCardTitle} from 'quasar'
 
 import HotelDatePicker from 'vue-hotel-datepicker'
 
@@ -29,16 +40,21 @@ export default {
   mixins: [mixins],
   components: {
     vSelect,
-    HotelDatePicker
+    HotelDatePicker,
+    QCard,
+    QCardMain,
+    QCardTitle
   },
   data () {
     return {
       totalLogs: -1,
       stats: {},
       actionData: {},
+      dailyTracker: 'ate',
       scatterData: [[174.0, 80.0], [176.5, 82.3]],
       actionKey: 'what',
-      actionType: 'ate'
+      actionType: 'ate',
+      dayData: []
     }
   },
   watch: {
@@ -66,6 +82,7 @@ export default {
 
       axios.get(conf.API_LOC + '/api/daydata?user=' + this.getUser())
         .then(page => {
+          this.dayData = page.data
           console.log(page)
           var result = []
           page.data.forEach(day => {
@@ -76,6 +93,13 @@ export default {
           })
           this.scatterData = result
         })
+    },
+    getLineChartData () {
+      let data = {}
+      this.dayData.forEach(day => {
+        data[day.date] = day.logs.filter(log => log.action === this.dailyTracker).length
+      })
+      return data
     },
     logConstraint (evt, checkIn) {
       this.timeConstraints[checkIn ? 'start' : 'end'] = evt

@@ -6,9 +6,9 @@
     <div v-else>
       <q-card style="margin: 20px;">
         <q-card-main>
+          <q-search v-model="search" placeholder="Type an action, what, who, or where" />
           <q-checkbox label="Ongoing Only" v-model="onlyOngoing"/>
           <q-checkbox label="Show Friend Activity" v-model="friendActivity"/>
-          <q-search v-model="search" placeholder="Type an action, what, who, or where" />
         </q-card-main>
       </q-card>
       <q-card v-for="log in first(100, filter(logs))" style="margin: 20px;">
@@ -101,7 +101,7 @@
           .then(page => page.data.sort((a, b) => {
             return moment.utc(a.when).diff(moment.utc(b.when))
           }))
-      //    .then(logs => logs.filter(log => log.user === this.getUser()))
+          // .then(logs => logs.filter(log => log.user === this.getUser()))
           .then(logs => logs.reverse())
           .then(logs => logs.map((l) => {
             l.showData = false
@@ -120,7 +120,7 @@
         original.editing = false
         var log = JSON.parse(logJSON)
         axios.put(conf.API_LOC + '/api/logs/' + log._id, log)
-        .then(page => this.refresh())
+          .then(page => this.refresh())
       },
       pickKeys (log) {
         let keys = Object.keys(log)
@@ -129,8 +129,8 @@
           return (!blacklist.includes(k) && log[k].length !== 0)
         })
       },
-      sendComment(){
-        if(!this.commenting.comments) this.commenting.comments = []
+      sendComment () {
+        if (!this.commenting.comments) this.commenting.comments = []
         this.commenting.comments.push({
           user: this.getUser(),
           text: this.comment,
@@ -151,15 +151,15 @@
           let safe = !this.getSettings().HideNSFW || (log.action !== 'smoked' && log.action !== 'copped' && !(log.action === 'bought' && log.what === 'weed'))
           let showOngoing = !this.onlyOngoing || log.ongoing
           let showFriend = this.friendActivity || log.user === you
-          let searched = this.search == '' || this.searchCheck(this.search, log)
+          let searched = this.search === '' || this.searchCheck(this.search, log)
           return safe && showOngoing && showFriend && searched
         })
       },
       searchCheck (search, log) {
         let raw = JSON.stringify(log).toLowerCase()
         let passed = true
-        search.toLowerCase().split(" ").forEach(word => {
-           passed = passed * raw.includes(word)
+        search.toLowerCase().split(' ').forEach(word => {
+          passed = passed * raw.includes(word)
         })
         return passed
       },
