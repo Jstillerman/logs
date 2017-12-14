@@ -106,6 +106,21 @@ export default ({ config, db }) => {
     })
   })
 
+  api.get('/weekdata/', (req, res) => {
+    Log.find({user: req.query.user}, (err, logs) => {
+      var aggr = {}
+      logs.forEach(log => {
+        var name = moment(log.when).add(-5, 'hours').format('ddd MMM Do')
+        var keyname = moment(log.when).add(-5, 'hours').week()
+        if(!aggr[keyname]) aggr[keyname] = {}
+        if(!aggr[keyname].logs) aggr[keyname].logs = []
+        aggr[keyname].logs.push(log)
+        aggr[keyname].date = name
+      })
+      res.json(Object.keys(aggr).map(key => aggr[key]))
+    })
+  })
+
 	api.use('/logs', logs({ config, db}));
   api.use('/people', people({ config, db}));
 
