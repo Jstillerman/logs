@@ -121,6 +121,32 @@ export default ({ config, db }) => {
     })
   })
 
+  api.get('/aggrdata/:days', (req, res) => {
+    Log.find({user: req.query.user}, (err, logs) => {
+      var thisYear = (new Date()).getFullYear();
+      var start = new Date("1/1/" + thisYear);
+      var defaultStart = moment(start.valueOf())
+
+      var aggr = {}
+      logs.forEach(log => {
+        //var name = moment(log.when).add(-5, 'hours').format('ddd MMM Do')
+        var keyname = Math.floor(moment(log.when).add(-5, 'hours').diff(defaultStart, 'days') / req.params.days)
+        if(!aggr[keyname]) aggr[keyname] = {}
+        if(!aggr[keyname].logs) aggr[keyname].logs = []
+        aggr[keyname].logs.push(log)
+      //  aggr[keyname].date = name
+      })
+
+      Object.keys(aggr).forEach(key => {
+        //Get the first part of the date
+        aggr[key].date = moment(aggr[key].logs[0].when).format('ddd MMM Do')
+        //and the second
+        aggr[key].date += (' - ' + moment(aggr[key].logs[aggr[key].logs.length - 1].when).format('ddd MMM Do'))
+      })
+      res.json(Object.keys(aggr).map(key => aggr[key]))
+    })
+  })
+
 	api.use('/logs', logs({ config, db}));
   api.use('/people', people({ config, db}));
 
