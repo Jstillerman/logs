@@ -16,7 +16,8 @@ let actions = [
   {icon: 'fa-hand-paper-o', nsfw: true, text: 'I copped', action: 'copped', color: 'red', additionalFields: ['price']},
   {icon: 'fa-cloud', text: 'I had an idea', action: 'thought', color: 'green'},
   {icon: 'fa-book', text: 'I learned...', action: 'learned', color: 'pink'},
-  {icon: 'fa-paw', text: 'I walked...', action: 'walked', color: 'brown', ongoing: true}
+  {icon: 'fa-paw', text: 'I walked...', action: 'walked', color: 'brown', ongoing: true},
+  {icon: 'fa-bed', text: 'I got in bed', action: 'got in bed', color: 'blue', ongoing: true}
 ]
 
 function getActions () {

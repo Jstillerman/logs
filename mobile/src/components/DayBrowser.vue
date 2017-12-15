@@ -1,5 +1,8 @@
 <template>
   <div class="daybrowser">
+    <q-card>
+      <q-input style="padding: 10px;" type="number" v-model="dayAggrigationNum" float-label="# of Days"></q-input>
+    </q-card>
     <q-card v-for="day in days">
       <q-card-title>{{day.date}}</q-card-title>
       <q-card-main>
@@ -18,16 +21,6 @@
         <q-btn flat>Jump</q-btn>
       </q-card-actions>
     </q-card>
-    <div v-for='day in days' class="singleday">
-      <h3>{{day.date}}</h3>
-      Total Logs: {{day.logs.length}}<br>
-      Productivity: {{getHours(day.productivity.total)}}<br>
-      Logs Productivity: {{getHours(day.productivity.logs)}}<br>
-      Other Productivity: {{getHours(day.productivity.other)}}<br>
-      Productivity Types: {{day.productivity.types}}<br>
-      Things Eaten: {{day.stats.mealCount}}<br>
-      Times Smoked: {{day.stats.smokeCount}}
-    </div>
   </div>
 </template>
 
@@ -36,7 +29,7 @@
 import axios from 'axios'
 import conf from '../config'
 import mixins from '../mixins'
-import {QCard, QCardTitle, QCardActions, QCardMain, QBtn, QCardSeparator} from 'quasar'
+import {QCard, QInput, QCardTitle, QCardActions, QCardMain, QBtn, QCardSeparator} from 'quasar'
 // import moment from 'moment'
 
 function sum (list) {
@@ -48,10 +41,16 @@ function sum (list) {
 
 export default {
   mixins: [mixins],
-  components: {QCard, QCardTitle, QCardActions, QCardMain, QBtn, QCardSeparator},
+  components: {QCard, QInput, QCardTitle, QCardActions, QCardMain, QBtn, QCardSeparator},
   data () {
     return {
-      days: []
+      days: [],
+      dayAggrigationNum: 1
+    }
+  },
+  watch: {
+    dayAggrigationNum () {
+      this.refresh()
     }
   },
   mounted () {
@@ -64,7 +63,7 @@ export default {
       })
     },
     refresh () {
-      axios.get(conf.API_LOC + '/api/daydata?user=' + this.getUser())
+      axios.get(conf.API_LOC + '/api/aggrdata/' + this.dayAggrigationNum + '?user=' + this.getUser())
         .then(page => {
           this.days = page.data.map(day => {
             day.data = day.logs.map(log => {
