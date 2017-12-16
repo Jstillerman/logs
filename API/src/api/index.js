@@ -68,6 +68,15 @@ export default ({ config, db }) => {
 
         })
       })
+      stats.other = 0
+      Object.keys(stats).forEach(key => {
+        if (key != 'attrs') {
+          if (stats[key] <= 1){
+            delete stats[key]
+            stats.other ++
+          }
+        }
+      })
       res.json(stats)
     })
   })
