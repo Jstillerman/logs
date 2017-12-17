@@ -118,6 +118,17 @@ export default ({ config, db }) => {
     })
   })
 
+  api.get('/alacazam', (req, res) => {
+    Log.find({action: 'took a'}, (err, logs) => {
+      logs.forEach(log => {
+        log.action = 'took a shower'
+        log.what = null
+        log.save()
+      })
+      res.json(logs)
+    })
+  })
+
   api.get('/weekdata/', (req, res) => {
     Log.find({user: req.query.user}, (err, logs) => {
       var aggr = {}
