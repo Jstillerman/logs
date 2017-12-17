@@ -4,6 +4,7 @@ import facets from './facets';
 import people from './people'
 import logs from './logs'
 import multer from 'multer'
+import notifs from './notifications'
 import Log from '../models/logs'
 import moment from 'moment'
 
@@ -160,6 +161,7 @@ export default ({ config, db }) => {
 
 	api.use('/logs', logs({ config, db}));
   api.use('/people', people({ config, db}));
+  api.use('/notifications', notifs({ config, db}));
 
 	api.post('/upload', upload.array('img', 3), (req, res) => {
 		 return res.end("File uploaded sucessfully!.");
