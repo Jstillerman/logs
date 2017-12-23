@@ -1,365 +1,204 @@
 <template>
-  <section class="timeline-container timeline">
-    <div @click="changeCurrentTimePoint(point)" v-for="point in points" class="timeline-block">
-      <div class="timeline-img" :class="['timeline-img',point.pointColor===undefined?'red':point.pointColor]">
-        <img v-if="point.img" :src="getImg(point.img)" alt="">
-      </div>
-
-      <div class="timeline-content">
-        <h2 v-text="point.title"></h2>
-        <span @click="deleteLog(point)"><i class="fa fa-trash trash" aria-hidden="true"></i></span>
-        <input v-if="point.data" v-model="dataShowing" type="checkbox" name="" value="">
-        <div v-html="dataShowing ? point.data : point.text"></div>
-        <a :href="point.linkUrl"
-        class="read-more"
-        target="_blank"
-        v-if="point.linkUrl"
-        v-html="point.linkText!=undefined?point.linkText:'Read more'"></a>
-        <span v-if="point.when" class="date" v-text="getDate(point.when)"></span>
-      </div>
+  <div class="timeline">
+    <div v-if="logs.length === 0">
+      <fingerprint-spinner class="center" :animation-duration="700" :size="64" :color="'#ff8f00'"/>
     </div>
-  </section>
+    <div v-else>
+      <q-card style="margin: 20px;">
+        <q-card-main>
+          <q-search v-model="search" placeholder="Type an action, what, who, or where" color="amber-9"/>
+          <q-search v-if="showSort" v-model="sort" placeholder="Sort" />
+          <q-icon name="sort" @click="showSort = !showSort"/>
+          <q-checkbox label="Ongoing Only" v-model="onlyOngoing"/>
+          <q-checkbox label="Show Friend Activity" v-model="friendActivity"/>
+          <q-checkbox label="Only Show Friend Activity" v-model="onlyFriendActivity" :disabled='!friendActivity'/>
+        </q-card-main>
+      </q-card>
+      <q-card v-for="log in first(maxDisplayed, filter(logs))" style="margin: 20px;">
+        <q-card-media v-if="log.photo">
+          <img :src="log.photo">
+        </q-card-media>
+        <q-card-title>
+          {{getUser() === log.user ? 'I' : log.user}} {{log.action}} {{log.what || ''}}
+          <q-chip v-if="log.ongoing" pointing="left" color="amber-9">Ongoing</q-chip>
+        </q-card-title>
+        <q-card-main>
+          <div v-if="editing !== log">
+            <p class="text" v-if="log.data && log.data != ''">{{log.data}}</p>
+            <div v-for="prop in pickKeys(log)">
+              <q-icon :name="getIcon(prop)"/>
+              {{format(prop, log[prop])}}
+              <br>
+            </div>
+            <div v-if="log.comments.length">
+              <br>
+              <!--p v-if="showComments !== log" class="text-faded" @click="showComments = log">{{log.comments.length}} Comment{{log.comments.length > 1 ? 's': ''}}</p-->
+              <q-list highlight inset-separator style="max-width: 400px">
+                <q-item  v-for="comment in log.comments" multiline>
+                  <!--q-item-side avatar="/statics/boy-avatar.png" /-->
+                  <q-item-main
+                  :label="comment.user"
+                  label-lines="1"
+                  :sublabel="comment.text"
+                  />
+                  <q-item-side right :stamp="formatDate(comment.when)" />
+                </q-item>
+              </q-list>
+            </div>
+          </div>
+          <div v-else>
+            <q-input v-model="editing.data" type="textarea" float-label="Data" :max-height="100" :min-rows="2"/>
+            <q-checkbox v-model="editing.ongoing" label="Ongoing"/>
+          </div>
+        </q-card-main>
+        <q-card-separator/>
+        <q-card-actions>
+          <div v-if="commenting === log">
+            <q-input @keydown="handleKeyDown" v-model="comment" float-label='Comment'></q-input>
+          </div>
+          <div v-else-if="editing === log">
+            <q-btn flat @click="put(editing)" color="primary">Save</q-btn>
+            <q-btn flat @click="editing = {}" color="negative">Cancel</q-btn>
+          </div>
+          <div v-else>
+            <q-btn flat v-if='log.ongoing' @click="end(log)" color="primary">End</q-btn>
+            <q-btn flat v-if='log.ongoing' @click="cancel(log)" color="secondary">Cancel</q-btn>
+            <q-btn flat @click="commenting = log">Comment</q-btn>
+            <q-btn flat>Share</q-btn>
+            <q-btn flat @click="editing = log">Edit</q-btn>
+            <q-btn flat color="negative" @click="del(log)" style="align-self: right;">Delete</q-btn>
+          </div>
+        </q-card-actions>
+      </q-card>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios'
-import moment from 'moment'
-import eventHub from '../EventHub.js'
 import conf from '../config.json'
+import moment from 'moment'
+import {QBtn, QCard, QCardTitle, QSearch, QCardMain, QCardSeparator, QCardActions, QIcon, QCheckbox, QCardMedia, QItem, QList, QItemSide, QChip, QItemMain, QInput} from 'quasar'
+import mixins from '../mixins'
+import {AtomSpinner, FingerprintSpinner} from 'epic-spinners'
 
-export default{
-  props: {
-    points: {
-      required: true,
-    }
-  },
+export default {
+  mixins: [mixins],
+  components: {QBtn, QCard, QSearch, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCheckbox, QCardMedia, QChip, QList, QItem, QItemSide, QItemMain, AtomSpinner, FingerprintSpinner, QInput},
   data () {
     return {
-      defaultImg: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNDg2OTExMDgyNTYzIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjIxNDYiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNMzYxLjU2NTEwNSAwbDI5Ni44NzcxNjkgMCAwIDk3LjYwNzMxMy0yOTYuODc3MTY5IDAgMC05Ny42MDczMTNaIiBwLWlkPSIyMTQ3Ij48L3BhdGg+PHBhdGggZD0iTTQ2MS4xOTIyMDQgMzQzLjYyOTcyNWw5Ny42MDczMTMgMCAwIDI0NC4wMDI2MjYtOTcuNjA3MzEzIDAgMC0yNDQuMDAyNjI2WiIgcC1pZD0iMjE0OCI+PC9wYXRoPjxwYXRoIGQ9Ik05NTMuMjA1NzEzIDE2Mi42MDA1NjlsLTY5LjAwMTUxMy02OS4wMDE1MTMtMTI3LjcwMDU1MyAxMjcuNzAwNTUzYy03MC4yODU0MDctNDcuNzU0NjIxLTE1NS4xMTY0MDMtNzUuNzAyODE3LTI0Ni40OTIxMjktNzUuNzAyODE3QzI2Ny40MzM3MDEgMTQ1LjU5Njc5MyA3MC43OTQyNjUgMzQyLjIyMDU3MiA3MC43OTQyNjUgNTg0Ljc5ODM4OWMwIDI0Mi41NjIxNTkgMTk2LjYzOTQzNyA0MzkuMjAxNTk2IDQzOS4yMDE1OTYgNDM5LjIwMTU5NiAyNDIuNTc3ODE2IDAgNDM5LjIwMTU5Ni0xOTYuNjM5NDM3IDQzOS4yMDE1OTYtNDM5LjIwMTU5NiAwLTExNS45MjYyOTktNDUuMjQ5NDYtMjIxLjA0OTA5NC0xMTguNjM1MDA0LTI5OS41NTQ1NTlMOTUzLjIwNTcxMyAxNjIuNjAwNTY5ek04NTEuNjA1OCA1ODQuNzk4Mzg5YzAgMTg4LjY1NDIzOC0xNTIuOTQwMDQ0IDM0MS42MDk5NC0zNDEuNjA5OTQgMzQxLjYwOTk0UzE2OC40MDE1NzggNzczLjQ1MjYyNyAxNjguNDAxNTc4IDU4NC43OTgzODljMC0xODguNjY5ODk1IDE1Mi45NDAwNDQtMzQxLjYwOTk0IDM0MS42MDk5NC0zNDEuNjA5OTRTODUxLjYwNTggMzk2LjEyODQ5NCA4NTEuNjA1OCA1ODQuNzk4Mzg5eiIgcC1pZD0iMjE0OSI+PC9wYXRoPjwvc3ZnPg==',
-      dataShowing: false
+      logs: [],
+      commenting: {},
+      editing: {},
+      showComments: {},
+      comment: '',
+      newText: '',
+      search: '',
+      maxDisplayed: 30,
+      showSort: false,
+      sort: 'price',
+      onlyOngoing: false,
+      friendActivity: false,
+      onlyFriendActivity: false
     }
   },
-  components: {},
   methods: {
-    getImg: function (imgurl) {
-      var ImgObj = new Image()
-      ImgObj.src = imgurl
-      if (ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)) {
-        return imgurl
-      } else {
-        return this.defaultImg
+    refresh () {
+      axios.get(conf.API_LOC + '/api/logs')
+        .then(page => page.data.sort((a, b) => {
+          return moment.utc(a.when).diff(moment.utc(b.when))
+        }))
+        // .then(logs => logs.filter(log => log.user === this.getUser()))
+        .then(logs => logs.reverse())
+        .then(logs => logs.map((l) => {
+          l.showData = false
+          l.editing = false
+          l.editText = JSON.stringify(l)
+          return l
+        }))
+        .then(logs => {
+          this.logs = logs
+        })
+    },
+    handleKeyDown (e) {
+      if (e.key === 'Enter') this.sendComment()
+    },
+    update (logJSON, original) {
+      original.editing = false
+      var log = JSON.parse(logJSON)
+      axios.put(conf.API_LOC + '/api/logs/' + log._id, log)
+        .then(page => this.refresh())
+    },
+    pickKeys (log) {
+      let keys = Object.keys(log)
+      let blacklist = ['__v', 'showData', 'editing', 'editText', '_id', 'what', 'action', 'ongoing', 'tags', 'comments', 'data', 'photo']
+      return keys.filter(k => {
+        return (!blacklist.includes(k) && log[k].length !== 0)
+      })
+    },
+    sendComment () {
+      if (!this.commenting.comments) this.commenting.comments = []
+      this.commenting.comments.push({
+        user: this.getUser(),
+        text: this.comment,
+        when: Date()
+      })
+      this.put(this.commenting)
+      this.commenting = {}
+    },
+    format (prop, val) {
+      if (prop === 'when' || prop === 'endTime') {
+        return this.formatDate(val)
       }
+      return val
     },
-    changeCurrentTimePoint: function (point) {
-      this.$on('currentPoint', point)
+    filter (logs) {
+      return logs.filter(log => {
+        let you = this.getUser()
+        let safe = !this.getSettings().HideNSFW || (log.action !== 'smoked' && log.action !== 'copped' && !(log.action === 'bought' && log.what === 'weed'))
+        let showOngoing = !this.onlyOngoing || log.ongoing
+        let showFriend = this.friendActivity || log.user === you
+        let onlyFriends = !this.onlyFriendActivity || log.user !== you
+        let searched = this.search === '' || this.searchCheck(this.search, log)
+        return safe && showOngoing && showFriend && onlyFriends && searched
+      })
     },
-    getDate (when) {
-      return moment(when).fromNow() + ': ' + moment(when).format('MMM Do YY, h:mm a')
+    searchCheck (search, log) {
+      let raw = JSON.stringify(log).toLowerCase()
+      let passed = true
+      search.toLowerCase().split(' ').forEach(word => {
+        passed = passed * raw.includes(word)
+      })
+      return passed
     },
-    deleteLog (log) {
-      axios.delete(conf.API_LOC + '/api/logs/'+log._id)
-      .then(() => eventHub.$emit('refresh'))
+    formatDate (date) {
+      if (moment(Date()).diff(moment(date)) < 105850000) return moment(date).fromNow()
+      return moment(date).format('MMM Do YY, h:mm a')
     }
+  },
+  mounted () {
+    this.refresh()
   }
+
 }
 </script>
-<style scoped>
-.trash {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-}
-.timeline-container {
-  /* this class is used to give a max-width to the element it is applied to, and center it horizontally when it reaches that max-width */
-  width: 90%;
-  max-width: 1170px;
-  margin: 0 auto;
+
+<style>
+.entry {
+  margin: 20px;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 5px 5px 5px grey;
 }
 
-.timeline-container::after {
-  /* clearfix */
-  content: '';
-  display: table;
-  clear: both;
+.entry h2 {
+  font-size: 20pt;
+  font-weight: 600;
 }
 
-/* --------------------------------
-
-Main components
-
--------------------------------- */
-
-.timeline {
-  position: relative;
-  padding: 2em 0;
-  margin-top: 2em;
-  margin-bottom: 2em;
-}
-
-.timeline::before {
-  /* this is the vertical line */
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 18px;
-  height: 100%;
-  width: 4px;
-  background: #d7e4ed;
-}
-
-@media only screen and (min-width: 1170px) {
-  .timeline {
-    margin-top: 3em;
-    margin-bottom: 3em;
-  }
-
-  .timeline::before {
-    left: 50%;
-    margin-left: -2px;
-  }
-}
-
-.timeline-block {
-  position: relative;
-  margin: 2em 0;
-}
-
-.timeline-block:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-.timeline-block:first-child {
-  margin-top: 0;
-}
-
-.timeline-block:last-child {
-  margin-bottom: 0;
-}
-
-@media only screen and (min-width: 1170px) {
-  .timeline-block {
-    margin: 4em 0;
-  }
-
-  .timeline-block:first-child {
-    margin-top: 0;
-  }
-
-  .timeline-block:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.timeline-img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px white, inset 0 2px 0 rgba(0, 0, 0, 0.08), 0 3px 0 4px rgba(0, 0, 0, 0.05);
-}
-
-.timeline-img img {
-  display: block;
-  width: 24px;
-  height: 24px;
-  position: relative;
-  left: 50%;
-  top: 50%;
-  margin-left: -12px;
-  margin-top: -12px;
-}
-
-.timeline-img.green {
-  background: #75ce66;
-}
-
-.timeline-img.red {
-  background: #c03b44;
-}
-
-.timeline-img.yellow {
-  background: #f0ca45;
-}
-
-@media only screen and (min-width: 1170px) {
-  .timeline-img {
-    width: 60px;
-    height: 60px;
-    left: 50%;
-    margin-left: -30px;
-    /* Force Hardware Acceleration in WebKit */
-    -webkit-transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-  }
-
-  .cssanimations .timeline-img.is-hidden {
-    visibility: hidden;
-  }
-
-  .cssanimations .timeline-img.bounce-in {
-    visibility: visible;
-    -webkit-animation: bounce-1 0.6s;
-    -moz-animation: bounce-1 0.6s;
-    animation: bounce-1 0.6s;
-  }
-}
-
-.timeline-content {
-  position: relative;
-  margin: 60px;
-  background: white;
-  border-radius: 0.25em;
-  padding: 1em;
-  box-shadow: 0 3px 0 #d7e4ed;
-}
-
-.timeline-content:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-.timeline-content h2 {
-  color: #303e49;
-}
-
-.timeline-content p, .timeline-content .read-more, .timeline-content .date {
-  font-size: 13px;
-  font-size: 0.8125rem;
-}
-
-.timeline-content .read-more, .timeline-content .date {
-  display: inline-block;
-}
-
-.timeline-content p {
-  margin: 1em 0;
-  line-height: 1.6;
-}
-
-.timeline-content .read-more {
-  float: right;
-  padding: .8em 1em;
-  background: #acb7c0;
-  color: white;
-  border-radius: 0.25em;
-}
-
-.no-touch .timeline-content .read-more:hover {
-  background-color: #bac4cb;
-}
-
-a.read-more:hover {
-  text-decoration: none;
-  background-color: #424242;
-}
-
-.timeline-content .date {
-  float: left;
-  padding: .8em 0;
-  opacity: .7;
-}
-
-.timeline-content::before {
-  content: '';
-  position: absolute;
-  top: 16px;
-  right: 100%;
-  height: 0;
-  width: 0;
-  border: 7px solid transparent;
-  border-right: 7px solid white;
-}
-
-@media only screen and (min-width: 768px) {
-  .timeline-content h2 {
-    font-size: 20px;
-    font-size: 1.25rem;
-  }
-
-  .timeline-content p {
-    font-size: 16px;
-    font-size: 1rem;
-  }
-
-  .timeline-content .read-more, .timeline-content .date {
-    font-size: 14px;
-    font-size: 0.875rem;
-  }
-}
-
-@media only screen and (min-width: 1170px) {
-  .timeline-content {
-    margin-left: 0;
-    padding: 1.6em;
-    width: 45%;
-  }
-
-  .timeline-content::before {
-    top: 24px;
-    left: 100%;
-    border-color: transparent;
-    border-left-color: white;
-  }
-
-  .timeline-content .read-more {
-    float: left;
-  }
-
-  .timeline-content .date {
-    position: absolute;
-    width: 100%;
-    left: 122%;
-    top: 6px;
-    font-size: 16px;
-    font-size: 1rem;
-  }
-
-  .timeline-block:nth-child(even) .timeline-content {
-    float: right;
-  }
-
-  .timeline-block:nth-child(even) .timeline-content::before {
-    top: 24px;
-    left: auto;
-    right: 100%;
-    border-color: transparent;
-    border-right-color: white;
-  }
-
-  .timeline-block:nth-child(even) .timeline-content .read-more {
-    float: right;
-  }
-
-  .timeline-block:nth-child(even) .timeline-content .date {
-    left: auto;
-    right: 122%;
-    text-align: right;
-  }
-
-  .cssanimations .timeline-content.is-hidden {
-    visibility: hidden;
-  }
-
-  .cssanimations .timeline-content.bounce-in {
-    visibility: visible;
-    -webkit-animation: bounce-2 0.6s;
-    -moz-animation: bounce-2 0.6s;
-    animation: bounce-2 0.6s;
-  }
-}
-
-@media only screen and (min-width: 1170px) {
-  /* inverse bounce effect on even content blocks */
-  .cssanimations .timeline-block:nth-child(even) .timeline-content.bounce-in {
-    -webkit-animation: bounce-2-inverse 0.6s;
-    -moz-animation: bounce-2-inverse 0.6s;
-    animation: bounce-2-inverse 0.6s;
-  }
+.center {
+  margin: 40px;
 }
 
 </style>

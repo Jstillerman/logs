@@ -1,38 +1,41 @@
-import VueRouter from 'vue-router'
-import quickEntry from './Components/QuickEntry.vue'
-import timeLine from './Components/Viewer.vue'
-import oneDay from './Components/OneDayView.vue'
-import stats from './Components/Stats.vue'
-import cal from './Components/Calendar.vue'
-
-import callback from './Components/Callback.vue'
 import Vue from 'vue'
+import VueRouter from 'vue-router'
 
-const routes = [
-  {name: 'quick-entry', path: '/quick-entry', component: quickEntry},
-  {name: 'stats', path: '/stats', component: stats},
-  {name: 'cal', path: '/cal', component: cal},
-  {name: 'day', path: '/day', component: oneDay},
-  {name: 'timeline', path: '/timeline', component: timeLine},
-  {name: 'callback', path: '/callback', component: callback},
-  {path: '/', redirect: 'day'}
-]
+Vue.use(VueRouter)
 
-const router = new VueRouter({
-  routes,
-  mode: 'history'
+function load (component) {
+  // '@' is aliased to src/components
+  return () => import(`@/${component}.vue`)
+}
+
+export default new VueRouter({
+  /*
+   * NOTE! VueRouter "history" mode DOESN'T works for Cordova builds,
+   * it is only to be used only for websites.
+   *
+   * If you decide to go with "history" mode, please also open /config/index.js
+   * and set "build.publicPath" to something other than an empty string.
+   * Example: '/' instead of current ''
+   *
+   * If switching back to default "hash" mode, don't forget to set the
+   * build publicPath back to '' so Cordova builds work again.
+   */
+
+  mode: 'hash',
+  scrollBehavior: () => ({ y: 0 }),
+
+  routes: [
+    { path: '/entry', component: load('LogEntry') },
+    { path: '/timeline', component: load('Timeline') },
+    { path: '/stats', component: load('Stats') },
+    { path: '/calendar', component: load('Calendar') },
+    { path: '/days', component: load('DayBrowser') },
+    { path: '/ongoing', component: load('Ongoing') },
+    { path: '/', redirect: '/entry' },
+    { path: '/settings', component: load('Settings') },
+    { path: '/hello', component: load('Hello') },
+
+    // Always leave this last one
+    { path: '*', component: load('Error404') } // Not found
+  ]
 })
-
-
-router.beforeEach((to, from, next) => {
-  console.log(to.name);
-  if(to.name == "callback") {
-    next()
-  }
-  else {
-    if(Vue.prototype.$session.get('profile')) next()
-    else console.log("you must be logged in");next(false)
-  }
-})
-
-export {router}

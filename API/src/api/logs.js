@@ -1,5 +1,6 @@
 import resource from 'resource-router-middleware';
 import Log from '../models/logs';
+import Notif from '../models/notifications'
 import moment from 'moment'
 
 export default ({ config }) => {
@@ -54,13 +55,26 @@ export default ({ config }) => {
 		/** PUT /:id - Update a given entity */
 		update(req, res) {
 			Log.findById(req.params.log, (err, log) => {
+				let newComments = req.body.comments.diff(log.comments || [])
+				newComments.forEach(comment => {
+					let notif = new Notif(comment)
+					notif.save()
+				})
 				for (let key in req.body) {
-					if (key!=='id') {
+					if (key!=='_id') {
 						log[key] = req.body[key];
 					}
 				}
-				log.save()
-				res.sendStatus(204)
+				log.save((err, log) => {
+					if(err) {
+						console.log(err)
+						res.send(err)
+					}
+					else {
+						console.log('updated log ' + log._id)
+						res.sendStatus(204)
+					}
+				})
 			})
 		},
 
@@ -85,6 +99,11 @@ export default ({ config }) => {
 
 	return rsrc
 }
+
+Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
+
 
 function trash(log) {
 	console.log(log.id)

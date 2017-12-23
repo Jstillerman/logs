@@ -4,21 +4,23 @@
       <q-btn round v-for="opt in options" style="margin-right: 10px; margin-bottom: 20px;" @click="select(opt)" :color="opt.color" :icon="opt.icon" />
       <div v-if="showEntry">
         <h3>{{selectedOpt.text}}</h3>
-        <q-input v-model="what" float-label="What" inverted>
-          <q-autocomplete v-if="stats" :static-data="getAutocomplete('what')" :min-characters="1"/>
-        </q-input>
-        <q-btn @click="what = whah" v-for="whah in first(5, predict('what'))">{{whah}}</q-btn>
-        <q-datetime v-model="when" type="datetime" color="secondary" float-label="When" inverted/>
-        <q-input v-model="where" float-label="Where" color="tertiary" inverted>
+        <q-checkbox v-model="ongoing" label="Ongoing" color="faded" />
+        <div v-if="!selectedOpt.noWhat">
+          <q-input v-model="what" float-label="What" inverted color="faded">
+            <q-autocomplete v-if="stats" :static-data="getAutocomplete('what')" :min-characters="1"/>
+          </q-input>
+          <q-btn @click="what = whah" v-for="whah in first(5, predict('what'))">{{whah}}</q-btn>
+        </div>
+        <q-datetime v-model="when" type="datetime" color="faded" float-label="When" inverted/>
+        <q-input v-model="where" float-label="Where" color="faded" inverted>
           <q-autocomplete v-if="stats" :static-data="getAutocomplete('where')" :min-characters="1"/>
         </q-input>
         <q-btn @click="where = place" v-for="place in first(5, predict('where'))">{{place}}</q-btn>
-        <q-chips-input v-model="who" float-label="Who" color="positive" inverted />
+        <q-chips-input v-model="who" float-label="Who" color="faded" inverted />
         <q-btn v-for="whom in first(5, predict('who'))" @click="who.push(whom)">{{whom}}</q-btn>
-        <q-chips-input v-model="tags" float-label="Tags" color="info" inverted />
+        <q-chips-input v-model="tags" float-label="Tags" color="faded" inverted />
         <q-btn v-if='stats' v-for="tag in first(5, predict('tags'))" @click="tags.push(tag)">{{tag}}</q-btn>
-        <q-checkbox v-model="ongoing" label="Ongoing" />
-        <q-input v-for="f in selectedOpt.additionalFields" v-model="additionalFields[f]" :float-label='f' color='red'/>
+        <q-input inverted v-for="f in selectedOpt.additionalFields" v-model="additionalFields[f]" :float-label='f' color='amber-9'/>
         <div class="list">
           <div class="item multiple-lines item-delimiter">
             <div class="item-content">
@@ -79,6 +81,7 @@ export default {
     predict (field) {
       if (Object.keys(this.stats).length > 1) { // if the stats aren't empty (empty stats still have attrs)
         return (Object.keys(this.stats[field] || {}))
+          .filter(t => t !== 'other') // filter out other
           .filter(t => t !== '') // filter out blanks
           .sort((a, b) => this.stats[field][b] - this.stats[field][a])
       }
