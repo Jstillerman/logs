@@ -27,7 +27,7 @@ app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
 
-app.use('/', express.static(path.join(__dirname, '../dist-client')));
+app.use('/', express.static(path.join(__dirname, '../../Client/dist')));
 
 // connect to db
 initializeDb( db => {

@@ -10,14 +10,15 @@ let actions = [
   {icon: 'fa-tree', nsfw: 'true', text: 'I smoked...', color: 'brown', action: 'smoked'},
   {icon: 'fa-male', text: 'I tested (Athletic)...', color: 'green', action: 'performed', what: '20 pushups'},
   {icon: 'fa-heart-o', text: 'I experienced', color: 'purple', action: 'experienced', additionalFields: ['intensity']},
-  {icon: 'fa-shower', text: 'I took a', what: 'shower', color: 'blue', action: 'took a', where: 'bathroom', ongoing: true},
+  {icon: 'fa-shower', text: 'I took a shower', color: 'blue', action: 'took a shower', where: 'bathroom', ongoing: true, noWhat: true},
   {icon: 'fa-tv', text: 'I started watching', action: 'watched', color: 'brown', ongoing: true},
   {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true, additionalFields: ['destination']},
   {icon: 'fa-hand-paper-o', nsfw: true, text: 'I copped', action: 'copped', color: 'red', additionalFields: ['price']},
-  {icon: 'fa-cloud', text: 'I had an idea', action: 'thought', color: 'green'},
+  {icon: 'fa-cloud', text: 'I had an idea', action: 'thought', color: 'green', noWhat: true},
   {icon: 'fa-book', text: 'I learned...', action: 'learned', color: 'pink'},
   {icon: 'fa-paw', text: 'I walked...', action: 'walked', color: 'brown', ongoing: true},
-  {icon: 'fa-bed', text: 'I got in bed', action: 'got in bed', color: 'blue', ongoing: true}
+  {icon: 'fa-bed', text: 'I got in bed', action: 'got in bed', color: 'blue', ongoing: true},
+  {icon: 'fa-gamepad', text: 'I started gaming', action: 'played', color: 'red', ongoing: true}
 ]
 
 function getActions () {

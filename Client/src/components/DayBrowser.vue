@@ -79,12 +79,14 @@ export default {
               return 0
             }))
 
-            day.productivity.logs = sum(day.logs.filter(log => log.what.toLowerCase() === 'logs' && log.action === 'worked on')
+            console.log('day', day)
+            /*
+            day.logs = sum(day.logs.filter(log => log.what.toLowerCase() === 'logs' && log.action === 'worked on')
               .map(log => {
                 if (log.duration) return log.duration
                 return 0
               }))
-
+              */
             day.stats = {}
             day.stats.mealCount = day.logs.filter(log => log.action === 'ate').length
             day.stats.smokeCount = day.logs.filter(log => log.action === 'smoked').length
