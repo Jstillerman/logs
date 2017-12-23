@@ -1,7 +1,7 @@
 {
   "name": "lumberjack-quasar",
   "productName": "Lumberjack",
-  "version": "1",
+  "version": "1.0.0",
   "private": true,
   "description": "The quasar client for Lumberjack",
   "author": "Jason Stillerman <jason.t.stillerman@gmail.com>",
@@ -18,7 +18,12 @@
     "chartkick": "^2.2.4",
     "d3": "^4.12.0",
     "epic-spinners": "^1.0.0",
+    "eslint-friendly-formatter": "^3.0.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "html-webpack-plugin": "^2.30.1",
     "moment": "^2.19.2",
+    "progress-bar-webpack-plugin": "^1.10.0",
+    "purify-css": "^1.2.6",
     "quasar-extras": "0.x",
     "quasar-framework": "^0.14.4",
     "vue": "^2.5.0",
@@ -28,7 +33,8 @@
     "vue-fullcalendar": "^1.0.9",
     "vue-hotel-datepicker": "^2.0.11",
     "vue-router": "^3.0.1",
-    "vue-select": "^2.3.0"
+    "vue-select": "^2.3.0",
+    "webpack-merge": "^4.1.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.0",
