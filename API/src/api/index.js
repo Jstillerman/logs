@@ -6,6 +6,7 @@ import logs from './logs'
 import multer from 'multer'
 import notifs from './notifications'
 import Log from '../models/logs'
+import Notif from '../models/notifications'
 import moment from 'moment'
 
 
@@ -108,14 +109,15 @@ export default ({ config, db }) => {
   })
 
   api.get('/alacazam', (req, res) => {
-    Log.find({action: 'took a'}, (err, logs) => {
+    Log.find({action: 'worked on', what: 'logs'}, (err, logs) => {
       logs.forEach(log => {
-        log.action = 'took a shower'
-        log.what = null
+        log.what = 'lumberjack'
         log.save()
       })
       res.json(logs)
     })
+
+    Notif.remove({})
   })
 
   api.get('/weekdata/', (req, res) => {
