@@ -6,7 +6,9 @@ var Notif = mongoose.model('Notification', {
 	log: String, // ID string
 	user: String,
 	actor: String,
-	action: String // Commented, Posted, Starred etc
+	action: String, // Commented, Posted, Starred etc
+	when: Date,
+	content: String
 });
 
 
