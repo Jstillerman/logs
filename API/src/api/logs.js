@@ -57,7 +57,7 @@ export default ({ config }) => {
 			Log.findById(req.params.log, (err, log) => {
 				let newComments = req.body.comments.diff(log.comments || [])
 				newComments.forEach(comment => {
-					let notif = new Notif(comment)
+					let notif = new Notif({log: log._id, user: log.user, actor: comment.user, action: 'commented'})
 					notif.save()
 				})
 				for (let key in req.body) {
