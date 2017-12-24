@@ -5,7 +5,7 @@ mongoose.connect('mongodb://localhost/test', { useMongoClient: true, promiseLibr
 var Notif = mongoose.model('Notification', {
 	log: String, // ID string
 	user: String,
-	acter: String,
+	actor: String,
 	action: String // Commented, Posted, Starred etc
 });
 
