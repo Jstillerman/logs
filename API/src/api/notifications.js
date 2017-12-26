@@ -55,9 +55,9 @@ export default ({ config }) => {
 
 		/** DELETE /:id - Delete a given entity */
 		delete(req, res) {
-			Notif.remove({_id: req.params.id},(err) => {
-				if(err) res.error(err)
-				res.sendStatus(204)
+			Notif.remove({_id: req.params.notification},(err, n) => {
+				if(err) return (err)
+				res.json(n)
 			});
 		}
 	})

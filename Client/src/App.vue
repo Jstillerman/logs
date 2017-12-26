@@ -46,7 +46,7 @@
         <q-list link inset-delimiter>
           <q-list-header>Notifications</q-list-header>
           <q-item v-for="notif in notifications" @click="goto(notif)">
-            <p>{{JSON.stringify(notif)}}</p>
+            <p>{{notif.actor}} {{notif.action}} on your post.</p><p class="text-faded">{{formatDate(notif.when)}}</p>
           </q-item>
         </q-list>
       </div>
@@ -76,6 +76,11 @@ export default {
       console.log('app refreshing')
       axios.get(conf.API_LOC + '/api/notifications')
         .then(page => { this.notifications = page.data })
+    },
+    goto (notif) {
+      if (notif.log) {
+        this.$router.push('/timeline/' + notif.log)
+      }
     }
   }
 }

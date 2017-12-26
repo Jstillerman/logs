@@ -102,6 +102,11 @@ export default {
       onlyFriendActivity: false
     }
   },
+  watch: {
+    $route (newRoute) {
+      this.search = newRoute.params.stuff
+    }
+  },
   methods: {
     refresh () {
       axios.get(conf.API_LOC + '/api/logs')
@@ -133,7 +138,7 @@ export default {
       let keys = Object.keys(log)
       let blacklist = ['__v', 'showData', 'editing', 'editText', '_id', 'what', 'action', 'ongoing', 'tags', 'comments', 'data', 'photo']
       return keys.filter(k => {
-        return (!blacklist.includes(k) && log[k].length !== 0)
+        return (!blacklist.includes(k) && log[k].length > 0)
       })
     },
     sendComment () {
@@ -177,6 +182,7 @@ export default {
     }
   },
   mounted () {
+    console.log('hello')
     this.refresh()
   }
 

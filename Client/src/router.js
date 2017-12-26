@@ -27,6 +27,7 @@ export default new VueRouter({
   routes: [
     { path: '/entry', component: load('LogEntry') },
     { path: '/timeline', component: load('Timeline') },
+    { path: '/timeline/:stuff', component: load('Timeline') },
     { path: '/stats', component: load('Stats') },
     { path: '/calendar', component: load('Calendar') },
     { path: '/days', component: load('DayBrowser') },

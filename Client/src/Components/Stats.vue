@@ -2,11 +2,21 @@
   <div class="stats">
     Total # logs: {{totalLogs}}
     <br>
-    <h3>{{actionKey + " I " + actionType}}</h3>
-    <v-select @click="getOptions(actionType)" v-model="actionType" :options="Object.keys(stats.freq || {})"></v-select>
-    <v-select v-model="actionKey" :options="actionData.attrs"></v-select>
-    <pie-chart :data="actionData[actionKey]"></pie-chart>
-    <scatter-chart :data="scatterData" xtitle="Size" ytitle="Population"></scatter-chart>
+    <q-card>
+      <q-card-title>
+        Frequency Pies
+        <span slot="subtitle">{{actionKey + " I " + actionType}}</span>
+      </q-card-title>
+      <q-card-main>
+        <v-select @click="getOptions(actionType)" v-model="actionType" :options="Object.keys(stats.freq || {})"></v-select>
+        <v-select v-model="actionKey" :options="actionData.attrs"></v-select>
+        <q-input v-model="minimiumCount" type="number"></q-input>
+        <pie-chart :data="filter(actionData[actionKey])"></pie-chart>
+      </q-card-main>
+    </q-card>
+    <q-card v-if="!getSettings().HideNSFW">
+      <scatter-chart :data="scatterData" xtitle="Times Smoked" ytitle="Minutes Productivity"></scatter-chart>
+    </q-card
     <q-card>
       <q-card-title>
         Daily Count Tracker
@@ -26,7 +36,7 @@ import eventHub from '../EventHub.js'
 import conf from '../config.json'
 import vSelect from 'vue-select'
 import mixins from '../mixins'
-import {QCard, QCardMain, QCardTitle} from 'quasar'
+import {QCard, QCardMain, QCardTitle, QInput} from 'quasar'
 
 import HotelDatePicker from 'vue-hotel-datepicker'
 
@@ -42,6 +52,7 @@ export default {
     vSelect,
     HotelDatePicker,
     QCard,
+    QInput,
     QCardMain,
     QCardTitle
   },
@@ -50,6 +61,7 @@ export default {
       totalLogs: -1,
       stats: {},
       actionData: {},
+      minimiumCount: 3,
       dailyTracker: 'ate',
       scatterData: [[174.0, 80.0], [176.5, 82.3]],
       actionKey: 'what',
@@ -94,6 +106,23 @@ export default {
           this.scatterData = result
         })
     },
+    filter (s) {
+      if (s) {
+        let stats = JSON.parse(JSON.stringify(s))
+        stats.other = 0
+        Object.keys(stats).forEach(key => {
+          if (stats[key] <= this.minimiumCount && key !== 'other') {
+            delete stats[key]
+            stats.other++
+          }
+        })
+        if (stats.other === 0) delete stats.other
+        return stats
+      }
+      else {
+        return s
+      }
+    },
     getLineChartData () {
       let data = {}
       this.dayData.forEach(day => {
@@ -104,10 +133,9 @@ export default {
     logConstraint (evt, checkIn) {
       this.timeConstraints[checkIn ? 'start' : 'end'] = evt
     },
-    getOptions (action) {
+    getOptions () {
       axios.get(conf.API_LOC + '/api/logs/stats/' + this.actionType + '?user=' + this.getUser())
         .then(page => page.data)
-        .then('poopy', console.log)
         .then(data => { this.actionData = data })
       // .then(data => Object.keys(data))
     }
