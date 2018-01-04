@@ -14,7 +14,31 @@ export default ({ config, db }) => {
 	});
 
   assistant.get('/:sentence', (req, res) => {
-    let s = new Log({action: 'told Google Assistant', what: "\""+req.params.sentence+"\"", when: Date(), where: 'my room', user: "Jason Stillerman"})
+		let newLog = {}
+		let sen = req.params.sentence.toLowerCase()
+		if (sen.startsWith(' ')) sen = sen.substring(1)
+		if (sen.includes('shower')) {
+			newLog = {
+				actions: 'took a shower',
+				where: 'bathroom',
+				user: 'Jason Stillerman',
+				ongoing: true,
+				when: Date()
+			}
+		}
+		else if (sen.startsWith('i ate')) {
+			let food = sen.split(' ').slice(2) // drop the first two guys
+			newLog = {
+				action: 'ate',
+				user: 'Jason Stillerman',
+				when: Date(),
+				what: food
+			}
+		}
+		else {
+			newLog = {action: 'told Google Assistant', what: "\""+req.params.sentence+"\"", when: Date(), where: 'my room', user: "Jason Stillerman"}
+		}
+    let s = new Log(newLog)
     s.save((err, log) => {
       if(err) return err
       res.json(log)
