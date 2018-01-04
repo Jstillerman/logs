@@ -19,7 +19,7 @@ export default ({ config, db }) => {
 		if (sen.startsWith(' ')) sen = sen.substring(1)
 		if (sen.includes('shower')) {
 			newLog = {
-				actions: 'took a shower',
+				action: 'took a shower',
 				where: 'bathroom',
 				user: 'Jason Stillerman',
 				ongoing: true,
