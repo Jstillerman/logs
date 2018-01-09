@@ -12,6 +12,7 @@
           <q-btn @click="what = whah" v-for="whah in first(5, predict('what'))">{{whah}}</q-btn>
         </div>
         <q-datetime v-model="when" type="datetime" color="faded" float-label="When" inverted/>
+	<q-btn v-for="minsAgo in [5, 10, 15, 20, 30, 60]" @click="setMinutesAgo(minsAgo)">{{minsAgo}}</q-btn>
         <q-input v-model="where" float-label="Where" color="faded" inverted>
           <q-autocomplete v-if="stats" :static-data="getAutocomplete('where')" :min-characters="1"/>
         </q-input>
@@ -43,6 +44,7 @@ import axios from 'axios'
 import conf from '../config.json'
 import mixins from '../mixins'
 import actions from '../actions'
+import moment from 'moment'
 
 export default {
   mixins: [mixins],
@@ -108,6 +110,9 @@ export default {
         .sort((a, b) => tags[b] - tags[a]) // sort by frequency
         .filter(t => t !== '') // filter out blanks
         .slice(0, 5) // Get only the first three items
+    },
+    setMinutesAgo (minsAgo) {
+      this.when = moment().subtract(minsAgo, 'minutes').toDate()
     },
     refreshStats (action) {
       axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())

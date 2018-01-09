@@ -1,6 +1,12 @@
 <template lang="html">
   <div class="stats">
-    Total # logs: {{totalLogs}}
+    <q-card>
+      Total # logs: {{totalLogs}}
+      {{constraints}}
+      <q-btn @click="addConstraint">Add Constraint</q-btn>
+      <q-input v-model="cField" />
+      <q-input v-model="cValue" />
+    </q-card>
     <br>
     <q-card>
       <q-card-title>
@@ -36,7 +42,7 @@ import eventHub from '../EventHub.js'
 import conf from '../config.json'
 import vSelect from 'vue-select'
 import mixins from '../mixins'
-import {QCard, QCardMain, QCardTitle, QInput} from 'quasar'
+import {QBtn, QCard, QCardMain, QCardTitle, QInput} from 'quasar'
 
 import HotelDatePicker from 'vue-hotel-datepicker'
 
@@ -52,6 +58,7 @@ export default {
     vSelect,
     HotelDatePicker,
     QCard,
+    QBtn,
     QInput,
     QCardMain,
     QCardTitle
@@ -66,7 +73,10 @@ export default {
       scatterData: [[174.0, 80.0], [176.5, 82.3]],
       actionKey: 'what',
       actionType: 'ate',
-      dayData: []
+      dayData: [],
+      constraints: {},
+      cField: '',
+      cValue: ''
     }
   },
   watch: {
@@ -76,7 +86,7 @@ export default {
   },
   methods: {
     refresh () {
-      axios.get(conf.API_LOC + '/api/logs?user=' + this.getUser())
+      axios.get(conf.API_LOC + '/api/logs?user=' + this.getUser() + '&' + this.stringifyConstraints())
         .then(logs => logs.data.length)
         .then(len => { this.totalLogs = len })
 
@@ -105,6 +115,16 @@ export default {
           })
           this.scatterData = result
         })
+    },
+    addConstraint () {
+      this.constraints[this.cField] = this.cValue
+      this.cField = this.cValue = ''
+      this.refresh() 
+    },
+    stringifyConstraints () {
+      let result = ''
+      Object.keys(this.constraints).forEach(key => result += key + '=' + this.constraints[key])
+      return result
     },
     filter (s) {
       if (s) {
