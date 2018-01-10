@@ -91,10 +91,10 @@ export default {
     },
     predict (field) {
       if (Object.keys(this.stats).length > 1) { // if the stats aren't empty (empty stats still have attrs)
-      return (Object.keys(this.stats[field] || {}))
-        .filter(t => t !== 'other') // filter out other
-        .filter(t => t !== '') // filter out blanks
-        .sort((a, b) => this.stats[field][b] - this.stats[field][a])
+        return (Object.keys(this.stats[field] || {}))
+          .filter(t => t !== 'other') // filter out other
+          .filter(t => t !== '') // filter out blanks
+          .sort((a, b) => this.stats[field][b] - this.stats[field][a])
       }
       return []
     },

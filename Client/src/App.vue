@@ -76,7 +76,7 @@ export default {
     refresh () {
       console.log('app refreshing')
       axios.get(conf.API_LOC + '/api/notifications')
-        .then(page => { this.notifications = page.data.reverse() })
+        .then(page => { this.notifications = page.data.filter(not => not.user === this.getUser()).reverse() })
     },
     goto (notif) {
       if (notif.log) {
