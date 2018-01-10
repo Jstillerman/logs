@@ -9,6 +9,7 @@
         <q-toolbar-title>
           Lumberjack
         </q-toolbar-title>
+        Hi, {{getUser()}}
         <q-btn color="amber-9" flat @click="$refs.layout.toggleRight()">
           <q-icon name="announcement" />
         </q-btn>
@@ -46,7 +47,7 @@
         <q-list link inset-delimiter>
           <q-list-header>Notifications</q-list-header>
           <q-item v-for="notif in notifications" @click="goto(notif)">
-            <p>{{notif.actor}} {{notif.action}} on your post.</p><p class="text-faded">{{formatDate(notif.when)}}</p>
+            <p>{{notif.actor}} {{notif.action}} {{notif.content}} on your post.</p><p class="text-faded">{{formatDate(notif.when)}}</p>
           </q-item>
         </q-list>
       </div>
@@ -75,10 +76,11 @@ export default {
     refresh () {
       console.log('app refreshing')
       axios.get(conf.API_LOC + '/api/notifications')
-        .then(page => { this.notifications = page.data })
+        .then(page => { this.notifications = page.data.reverse() })
     },
     goto (notif) {
       if (notif.log) {
+        this.$refs.layout.toggleRight()
         this.$router.push('/timeline/' + notif.log)
       }
     }

@@ -46,13 +46,23 @@ export default {
       if (icons[name]) return icons[name]
       return 'crop square'
     },
+    share (log, to) {
+      let from = this.getUser()
+      axios.post(conf.API_LOC + '/api/notifications', {
+        user: to,
+        actor: from,
+        log: log,
+        action: 'shared',
+        when: Date()
+      })
+    },
     getUser () {
       if (!LocalStorage.get.item('user')) LocalStorage.set('user', prompt('Name?'))
       return LocalStorage.get.item('user')
     },
     getSettings () {
       if (!LocalStorage.get.item('settings')) {
-        LocalStorage.set('settings', { HideNSFW: false })
+        LocalStorage.set('settings', { HideNSFW: false, showId: false })
       }
       return LocalStorage.get.item('settings')
     },

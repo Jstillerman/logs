@@ -1,7 +1,11 @@
 <template>
   <div class="">
     <div class="container">
-      <q-btn round v-for="opt in options" style="margin-right: 10px; margin-bottom: 20px;" @click="select(opt)" :color="opt.color" :icon="opt.icon" />
+      <p v-if="editing">You can drag these around</p>
+      <draggable v-if="editing">
+        <q-btn round v-for="opt in options" style="margin-right: 10px; margin-bottom: 20px;" @click="select(opt)" :key="opt.action" :color="opt.color" :icon="opt.icon"/>
+      </draggable>
+      <q-btn v-else round v-for="opt in options" style="margin-right: 10px; margin-bottom: 20px;" @click="select(opt)" :key="opt.action" :color="opt.color" :icon="opt.icon"/>
       <div v-if="showEntry">
         <h3>{{selectedOpt.text}}</h3>
         <q-checkbox v-model="ongoing" label="Ongoing" color="faded" />
@@ -34,19 +38,23 @@
         <q-btn flat color="green" @click="log">Log</q-btn><q-btn flat @click="nevermind()" color="orange">Nevermind</q-btn>
       </div>
     </div>
+    <q-fab @open="editing = true" @close="editing = false; revertOptions()" class="fixed" direction="up" style="right: 18px; bottom: 18px" color="amber-9" icon="edit">
+      <q-fab-action color="primary" @click="saveOptions()" icon="check"/>
+    </q-fab>
   </div>
 </template>
 
 <script>
-import {QBtn, QToolbar, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QListHeader, QDatetime, QChipsInput, QInput, QSideLink, QAutocomplete, QCheckbox} from 'quasar'
+import {QBtn, QToolbar, QFab, QFabAction, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QListHeader, QDatetime, QChipsInput, QInput, QSideLink, QAutocomplete, QCheckbox} from 'quasar'
 import axios from 'axios'
 import conf from '../config.json'
 import mixins from '../mixins'
 import actions from '../actions'
+import draggable from 'vuedraggable'
 
 export default {
   mixins: [mixins],
-  components: { QBtn, QToolbar, QLayout, QIcon, QItem, QItemSide, QItemMain, QList, QListHeader, QDatetime, QChipsInput, QInput, QSideLink, QAutocomplete, QCheckbox },
+  components: { QBtn, QToolbar, QFab, QFabAction, QLayout, QIcon, QItem, draggable, QItemSide, QItemMain, QList, QListHeader, QDatetime, QChipsInput, QInput, QSideLink, QAutocomplete, QCheckbox },
   data () {
     return {
       user: this.getUser(),
@@ -59,6 +67,7 @@ export default {
       what: '',
       where: '',
       data: '',
+      editing: false,
       ongoing: false,
       additionalFields: {},
       tags: []
@@ -80,71 +89,86 @@ export default {
     },
     predict (field) {
       if (Object.keys(this.stats).length > 1) { // if the stats aren't empty (empty stats still have attrs)
-        return (Object.keys(this.stats[field] || {}))
-          .filter(t => t !== 'other') // filter out other
-          .filter(t => t !== '') // filter out blanks
-          .sort((a, b) => this.stats[field][b] - this.stats[field][a])
-      }
-      return []
-    },
-    getAutocomplete (field) {
-      let prediction = this.predict(field)
-      console.log(prediction)
-      let formatted = prediction.map(p => {
-        return {
-          value: p,
-          label: p,
-          sublabel: 'Count: ' + this.stats[field][p]
-        }
-      })
-      return {
-        field: 'value',
-        list: formatted
-      }
-    },
-    cherryPick (tags) {
-      if (!tags || tags === {}) return []
-      return Object.keys(tags)
-        .sort((a, b) => tags[b] - tags[a]) // sort by frequency
+      return (Object.keys(this.stats[field] || {}))
+        .filter(t => t !== 'other') // filter out other
         .filter(t => t !== '') // filter out blanks
-        .slice(0, 5) // Get only the first three items
-    },
-    refreshStats (action) {
-      axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
-        .then(page => {
-          this.stats = page.data
-        })
-    },
-    log () {
-      var payload = {
-        action: this.selectedOpt.action,
-        what: this.what,
-        when: this.when,
-        user: this.user,
-        client: 'Quasar'
-      }
-      if (this.where !== '') payload.where = this.where
-      if (this.who !== []) payload.who = this.who
-      if (this.tags !== []) payload.tags = this.tags
-      if (this.ongoing) payload.ongoing = true
-      if (this.data) payload.data = this.data
-      Object.keys(this.additionalFields).forEach(key => {
-        if (this.additionalFields[key] !== '') payload[key] = this.additionalFields[key]
-      })
-      axios.post(conf.API_LOC + '/api/logs/', payload)
-        .then((page) => console.log('New log: ', page.data))
-      this.nevermind()
-    },
-    nevermind () {
-      this.showEntry = false
+        .sort((a, b) => this.stats[field][b] - this.stats[field][a])
     }
+    return []
+  },
+  getAutocomplete (field) {
+    let prediction = this.predict(field)
+    console.log(prediction)
+    let formatted = prediction.map(p => {
+      return {
+        value: p,
+        label: p,
+        sublabel: 'Count: ' + this.stats[field][p]
+      }
+    })
+    return {
+      field: 'value',
+      list: formatted
+    }
+  },
+  cherryPick (tags) {
+    if (!tags || tags === {}) return []
+    return Object.keys(tags)
+      .sort((a, b) => tags[b] - tags[a]) // sort by frequency
+      .filter(t => t !== '') // filter out blanks
+      .slice(0, 5) // Get only the first three items
+  },
+  refreshStats (action) {
+    axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
+      .then(page => {
+        this.stats = page.data
+      })
+  },
+  log () {
+    var payload = {
+      action: this.selectedOpt.action,
+      what: this.what,
+      when: this.when,
+      user: this.user,
+      client: 'Quasar'
+    }
+    if (this.where !== '') payload.where = this.where
+    if (this.who !== []) payload.who = this.who
+    if (this.tags !== []) payload.tags = this.tags
+    if (this.ongoing) payload.ongoing = true
+    if (this.data) payload.data = this.data
+    Object.keys(this.additionalFields).forEach(key => {
+      if (this.additionalFields[key] !== '') payload[key] = this.additionalFields[key]
+    })
+    axios.post(conf.API_LOC + '/api/logs/', payload)
+      .then((page) => console.log('New log: ', page.data))
+    this.nevermind()
+  },
+  saveOptions () {
+    actions.save(this.options)
+  },
+  revertOptions () {
+    this.options = actions.getActions()
+  },
+  nevermind () {
+    this.showEntry = false
   }
+}
 }
 </script>
 
 <style>
- .container {
-   margin: 20px;
- }
+.container {
+  margin: 20px;
+}
 
+.floatingButton {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+}
+
+.button-move {
+  transition: transform .5s cubic-bezier(.55,0,.1,1);
+}
 </style>

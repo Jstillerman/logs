@@ -1,4 +1,5 @@
 import mixin from './mixins'
+import { LocalStorage } from 'quasar'
 
 let actions = [
   {icon: 'fa-cutlery', text: 'I ate...', action: 'ate', color: 'green', extraOpts: {pointColor: 'blue'}},
@@ -11,6 +12,7 @@ let actions = [
   {icon: 'fa-male', text: 'I tested (Athletic)...', color: 'green', action: 'performed', what: '20 pushups'},
   {icon: 'fa-heart-o', text: 'I experienced', color: 'purple', action: 'experienced', additionalFields: ['intensity']},
   {icon: 'fa-shower', text: 'I took a shower', color: 'blue', action: 'took a shower', where: 'bathroom', ongoing: true, noWhat: true},
+  {icon: 'fa-smile-o', text: 'I brushed my teeth', color: 'green', action: 'brushed teeth', where: 'bathroom', noWhat: true},
   {icon: 'fa-tv', text: 'I started watching', action: 'watched', color: 'brown', ongoing: true},
   {icon: 'fa-bus', text: 'I rode', action: 'rode', what: 'the bus', color: 'orange', ongoing: true, additionalFields: ['destination']},
   {icon: 'fa-hand-paper-o', nsfw: true, text: 'I copped', action: 'copped', color: 'red', additionalFields: ['price']},
@@ -21,6 +23,9 @@ let actions = [
   {icon: 'fa-gamepad', text: 'I started gaming', action: 'played', color: 'red', ongoing: true}
 ]
 
+if (!LocalStorage.get.item('actions')) LocalStorage.set('actions', actions)
+actions = LocalStorage.get.item('actions')
+
 function getActions () {
   if (mixin.methods.getSettings().HideNSFW) {
     return actions.filter(act => !act.nsfw)
@@ -28,6 +33,22 @@ function getActions () {
   return actions
 }
 
+function getIcon (action) {
+  let target = actions.find(act => act.action === action)
+  if (target) {
+    return target.icon
+  }
+  else {
+    return 'fa-sleep'
+  }
+}
+
+function save (actions) {
+  LocalStorage.set('actions', actions)
+}
+
 export default {
-  getActions
+  getActions,
+  getIcon,
+  save
 }

@@ -27,6 +27,7 @@
     "quasar-extras": "0.x",
     "quasar-framework": "^0.14.4",
     "vue": "^2.5.0",
+    "vue-animated-list": "^1.0.2",
     "vue-chart": "^2.0.0",
     "vue-chartkick": "^0.2.0",
     "vue-full-calendar": "^2.5.0",
@@ -34,6 +35,7 @@
     "vue-hotel-datepicker": "^2.0.11",
     "vue-router": "^3.0.1",
     "vue-select": "^2.3.0",
+    "vuedraggable": "^2.16.0",
     "webpack-merge": "^4.1.1"
   },
   "devDependencies": {

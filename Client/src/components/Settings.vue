@@ -2,15 +2,16 @@
   <div class="settings">
     <q-card>
       <q-card-title>
-        Settingz
+        Settings
       </q-card-title>
       <q-card-main>
-        <q-checkbox v-if="settings.HideNSFW != null" v-model="settings.HideNSFW" label="Hide NSFW" />
+        <q-checkbox color="amber-9" v-if="settings.HideNSFW != null" v-model="settings.HideNSFW" label="Hide NSFW" />
+        <q-checkbox color="amber-9" v-if="settings.showId != null" v-model="settings.showId" label="Show IDs" />
       </q-card-main>
       <q-card-separator />
       <q-card-actions>
-        <q-btn flat @click="reset()" color="negative">Reset</q-btn>
-        <q-btn flat @click="changeUser()" color="negative">Change User</q-btn>
+        <q-btn flat @click="reset()" color="amber-9">Reset</q-btn>
+        <q-btn flat @click="changeUser()" color="amber-9">Change User</q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -41,7 +42,8 @@ export default {
   },
   methods: {
     reset () {
-      LocalStorage.set('settings', { HideNSFW: false })
+      LocalStorage.set('settings', false)
+      this.getSettings()
     },
     changeUser () {
       LocalStorage.set('user', false)

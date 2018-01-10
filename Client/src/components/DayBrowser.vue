@@ -8,7 +8,7 @@
       <q-card-main>
         Total Logs: {{day.logs.length}}<br>
         Productivity: {{getHours(day.productivity.total)}}<br>
-        Logs Productivity: {{getHours(day.productivity.logs)}}<br>
+        Lumberjack Productivity: {{getHours(day.productivity.lumberjack)}}<br>
         Other Productivity: {{getHours(day.productivity.other)}}<br>
         Productivity Types: {{day.productivity.types}}<br>
         Things Eaten: {{day.stats.mealCount}}<br>
@@ -63,7 +63,7 @@ export default {
       })
     },
     refresh () {
-      axios.get(conf.API_LOC + '/api/aggrdata/' + this.dayAggrigationNum + '?user=' + this.getUser())
+      axios.get(conf.API_LOC + '/api/daydata?user=' + this.getUser())
         .then(page => {
           this.days = page.data.map(day => {
             day.data = day.logs.map(log => {
@@ -78,20 +78,16 @@ export default {
               if (log.duration) return log.duration
               return 0
             }))
-
-            console.log('day', day)
-            /*
-            day.logs = sum(day.logs.filter(log => log.what.toLowerCase() === 'logs' && log.action === 'worked on')
+            day.productivity.lumberjack = sum(day.logs.filter(log => (log.what || '').toLowerCase() === 'lumberjack' && log.action === 'worked on')
               .map(log => {
                 if (log.duration) return log.duration
                 return 0
               }))
-              */
             day.stats = {}
             day.stats.mealCount = day.logs.filter(log => log.action === 'ate').length
             day.stats.smokeCount = day.logs.filter(log => log.action === 'smoked').length
 
-            day.productivity.other = day.productivity.total - day.productivity.logs
+            day.productivity.other = day.productivity.total - day.productivity.lumberjack
             day.productivity.types = day.logs.filter(log => log.action === 'worked on').map(log => log.what)
 
             return day
