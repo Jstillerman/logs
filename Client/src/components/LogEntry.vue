@@ -16,6 +16,7 @@
           <q-btn @click="what = whah" v-for="whah in first(5, predict('what'))">{{whah}}</q-btn>
         </div>
         <q-datetime v-model="when" type="datetime" color="faded" float-label="When" inverted/>
+	<q-btn v-for="minsAgo in [5, 10, 15, 20, 30, 60]" @click="setMinutesAgo(minsAgo)">{{minsAgo}}</q-btn>
         <q-input v-model="where" float-label="Where" color="faded" inverted>
           <q-autocomplete v-if="stats" :static-data="getAutocomplete('where')" :min-characters="1"/>
         </q-input>
@@ -51,6 +52,7 @@ import conf from '../config.json'
 import mixins from '../mixins'
 import actions from '../actions'
 import draggable from 'vuedraggable'
+import moment from 'moment'
 
 export default {
   mixins: [mixins],
@@ -93,67 +95,86 @@ export default {
         .filter(t => t !== 'other') // filter out other
         .filter(t => t !== '') // filter out blanks
         .sort((a, b) => this.stats[field][b] - this.stats[field][a])
-    }
-    return []
-  },
-  getAutocomplete (field) {
-    let prediction = this.predict(field)
-    console.log(prediction)
-    let formatted = prediction.map(p => {
-      return {
-        value: p,
-        label: p,
-        sublabel: 'Count: ' + this.stats[field][p]
       }
-    })
-    return {
-      field: 'value',
-      list: formatted
-    }
-  },
-  cherryPick (tags) {
-    if (!tags || tags === {}) return []
-    return Object.keys(tags)
-      .sort((a, b) => tags[b] - tags[a]) // sort by frequency
-      .filter(t => t !== '') // filter out blanks
-      .slice(0, 5) // Get only the first three items
-  },
-  refreshStats (action) {
-    axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
-      .then(page => {
-        this.stats = page.data
+      return []
+    },
+    getAutocomplete (field) {
+      let prediction = this.predict(field)
+      console.log(prediction)
+      let formatted = prediction.map(p => {
+        return {
+          value: p,
+          label: p,
+          sublabel: 'Count: ' + this.stats[field][p]
+          .slice(0, 5) // Get only the first five items
+        }
       })
-  },
-  log () {
-    var payload = {
-      action: this.selectedOpt.action,
-      what: this.what,
-      when: this.when,
-      user: this.user,
-      client: 'Quasar'
+      return {
+        field: 'value',
+        list: formatted
+      }
+    },
+    setMinutesAgo (minsAgo) {
+      this.when = moment().subtract(minsAgo, 'minutes').toDate()
+    },
+    refreshStats (action) {
+      axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
+        .then(page => {
+          this.stats = page.data
+        })
+    },
+    log () {
+      var payload = {
+        action: this.selectedOpt.action,
+        what: this.what,
+        when: this.when,
+        user: this.user,
+        client: 'Quasar'
+      }
+    },
+    cherryPick (tags) {
+      if (!tags || tags === {}) return []
+      return Object.keys(tags)
+        .sort((a, b) => tags[b] - tags[a]) // sort by frequency
+        .filter(t => t !== '') // filter out blanks
+        .slice(0, 5) // Get only the first three items
+    },
+    refreshStats (action) {
+      axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
+        .then(page => {
+          this.stats = page.data
+        })
+    },
+    log () {
+      var payload = {
+        action: this.selectedOpt.action,
+        what: this.what,
+        when: this.when,
+        user: this.user,
+        client: 'Quasar'
+      }
+      if (this.where !== '') payload.where = this.where
+      if (this.who !== []) payload.who = this.who
+      if (this.tags !== []) payload.tags = this.tags
+      if (this.ongoing) payload.ongoing = true
+      if (this.data) payload.data = this.data
+      Object.keys(this.additionalFields).forEach(key => {
+        if (this.additionalFields[key] !== '') payload[key] = this.additionalFields[key]
+      })
+      axios.post(conf.API_LOC + '/api/logs/', payload)
+        .then((page) => console.log('New log: ', page.data))
+      this.nevermind()
+    },
+    saveOptions () {
+      actions.save(this.options)
+    },
+    revertOptions () {
+      this.options = actions.getActions()
+    },
+    nevermind () {
+      this.showEntry = false
     }
-    if (this.where !== '') payload.where = this.where
-    if (this.who !== []) payload.who = this.who
-    if (this.tags !== []) payload.tags = this.tags
-    if (this.ongoing) payload.ongoing = true
-    if (this.data) payload.data = this.data
-    Object.keys(this.additionalFields).forEach(key => {
-      if (this.additionalFields[key] !== '') payload[key] = this.additionalFields[key]
-    })
-    axios.post(conf.API_LOC + '/api/logs/', payload)
-      .then((page) => console.log('New log: ', page.data))
-    this.nevermind()
-  },
-  saveOptions () {
-    actions.save(this.options)
-  },
-  revertOptions () {
-    this.options = actions.getActions()
-  },
-  nevermind () {
-    this.showEntry = false
   }
-}
 }
 </script>
 

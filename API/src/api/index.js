@@ -26,7 +26,7 @@ export default ({ config, db }) => {
 	let api = Router();
 
   api.get('/logs/stats', (req, res) => {
-		Log.find({user: req.query.user}, (err, all) => {
+		Log.find(req.query, (err, all) => {
 			if(err) return err
 			var stats = {
         freq: {},
