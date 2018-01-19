@@ -26,6 +26,13 @@ export default ({ config, db }) => {
 				when: Date()
 			}
 		}
+		else if (sen.includes('teeth') && sen.incudes('brush')) {
+			newLog = {
+				action: 'brushed teeth',
+				user: 'Jason Stillerman',
+				when: Date()
+			}
+		}
 		else if (sen.startsWith('i ate')) {
 			let food = sen.split(' ').slice(2) // drop the first two guys
 			newLog = {
