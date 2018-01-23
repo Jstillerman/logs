@@ -16,7 +16,7 @@
           <q-btn @click="what = whah" v-for="whah in first(5, predict('what'))">{{whah}}</q-btn>
         </div>
         <q-datetime v-model="when" type="datetime" color="faded" float-label="When" inverted/>
-	<q-btn v-for="minsAgo in [5, 10, 15, 20, 30, 60]" @click="setMinutesAgo(minsAgo)">{{minsAgo}}</q-btn>
+	      <q-btn v-for="minsAgo in [5, 10, 15, 20, 30, 60]" @click="setMinutesAgo(minsAgo)">{{minsAgo}}</q-btn>
         <q-input v-model="where" float-label="Where" color="faded" inverted>
           <q-autocomplete v-if="stats" :static-data="getAutocomplete('where')" :min-characters="1"/>
         </q-input>
@@ -106,7 +106,6 @@ export default {
           value: p,
           label: p,
           sublabel: 'Count: ' + this.stats[field][p]
-          .slice(0, 5) // Get only the first five items
         }
       })
       return {
@@ -116,21 +115,6 @@ export default {
     },
     setMinutesAgo (minsAgo) {
       this.when = moment().subtract(minsAgo, 'minutes').toDate()
-    },
-    refreshStats (action) {
-      axios.get(conf.API_LOC + '/api/logs/stats/' + action + '?user=' + this.getUser())
-        .then(page => {
-          this.stats = page.data
-        })
-    },
-    log () {
-      var payload = {
-        action: this.selectedOpt.action,
-        what: this.what,
-        when: this.when,
-        user: this.user,
-        client: 'Quasar'
-      }
     },
     cherryPick (tags) {
       if (!tags || tags === {}) return []

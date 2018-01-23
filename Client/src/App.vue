@@ -9,7 +9,8 @@
         <q-toolbar-title>
           Lumberjack
         </q-toolbar-title>
-        Hi, {{getUser()}}
+        <div v-if="authenticated">Hi, {{getUser()}}</div>
+        <q-btn v-else="!authenticated" @click="authenticate('google')">Login</q-btn>
         <q-btn color="amber-9" flat @click="$refs.layout.toggleRight()">
           <q-icon name="announcement" />
         </q-btn>
@@ -37,6 +38,10 @@
             <q-item-side icon="fa-bar-chart" />
             <q-item-main label="Stats"/>
           </q-side-link>
+          <q-side-link item to='/pies'>
+            <q-item-side icon="fa-bar-chart" />
+            <q-item-main label="Pies"/>
+          </q-side-link>
           <q-side-link item to='/settings'>
             <q-item-side icon="fa-cog" />
             <q-item-main label="Settings"/>
@@ -51,7 +56,7 @@
           </q-item>
         </q-list>
       </div>
-      <router-view />
+      <router-view :auth="auth" :authenticated="authenticated" />
     </q-layout>
   </div>
 </template>
@@ -59,17 +64,24 @@
 /*
 * Root component
 */
+import AuthService from './auth/AuthService'
 import axios from 'axios'
 import mixins from './mixins'
 import conf from './config'
 import {QBtn, QToolbar, QToolbarTitle, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QListHeader, QDatetime, QChipsInput, QInput, LocalStorage, QSideLink, QAutocomplete} from 'quasar'
+const auth = new AuthService()
+
+const { login, logout, authenticated } = auth
+
 export default {
   mixins: [mixins],
   components: {QBtn, QToolbar, QLayout, QIcon, QList, QItem, QItemSide, QItemMain, QToolbarTitle, QListHeader, QDatetime, QChipsInput, QInput, LocalStorage, QSideLink, QAutocomplete},
   data () {
     this.refresh()
     return {
-      notifications: []
+      notifications: [],
+      auth,
+      authenticated
     }
   },
   methods: {
@@ -83,6 +95,13 @@ export default {
         this.$refs.layout.toggleRight()
         this.$router.push('/timeline/' + notif.log)
       }
+    },
+    login,
+    logout,
+    authenticate (provider) {
+      this.$auth.authenticate(provider).then(function () {
+        console.log('Authenticated with', provider)
+      })
     }
   }
 }

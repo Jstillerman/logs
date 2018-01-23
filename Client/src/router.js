@@ -28,13 +28,15 @@ export default new VueRouter({
     { path: '/entry', component: load('LogEntry') },
     { path: '/timeline', component: load('Timeline') },
     { path: '/timeline/:stuff', component: load('Timeline') },
-    { path: '/stats', component: load('Stats') },
+    { path: '/stats', component: load('Stats/Stats') },
     { path: '/calendar', component: load('Calendar') },
     { path: '/days', component: load('DayBrowser') },
     { path: '/ongoing', component: load('Ongoing') },
     { path: '/', redirect: '/entry' },
     { path: '/settings', component: load('Settings') },
     { path: '/hello', component: load('Hello') },
+    { path: '/callback', component: load('Callback') },
+    { path: '/pies', component: load('Stats/Pies') },
 
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found

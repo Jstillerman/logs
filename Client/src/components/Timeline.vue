@@ -64,6 +64,12 @@
             </div>
             <div v-else>
               <q-input v-model="editing.data" type="textarea" float-label="Data" :max-height="100" :min-rows="2"/>
+              <q-datetime type="datetime" v-model="editing.when" float-label="When"/>
+              <q-datetime type="datetime" v-model="editing.endTime" float-label="End Time" />
+              <q-input v-model="editing.what" float-label="What" />
+              <q-input v-model="editing.where" float-label="Where" />
+              <q-chips-input v-model="editing.who" float-label="Who"/>
+              <q-chips-input v-model="editing.tags" float-label="Tags"/>
               <q-checkbox v-model="editing.ongoing" label="Ongoing"/>
             </div>
           </q-card-main>
@@ -92,14 +98,14 @@
 import axios from 'axios'
 import conf from '../config.json'
 import moment from 'moment'
-import {QBtn, QCard, QCardTitle, QSearch, QPullToRefresh, QCardMain, QCardSeparator, QCardActions, QIcon, QCheckbox, QCardMedia, QItem, QList, QItemSide, QChip, QItemMain, QPopover, QInput} from 'quasar'
+import {QBtn, QCard, QDatetime, QCardTitle, QSearch, QPullToRefresh, QCardMain, QChipsInput, QCardSeparator, QCardActions, QIcon, QCheckbox, QCardMedia, QItem, QList, QItemSide, QChip, QItemMain, QPopover, QInput} from 'quasar'
 import mixins from '../mixins'
 import {AtomSpinner, FingerprintSpinner} from 'epic-spinners'
 import actions from '../actions'
 
 export default {
   mixins: [mixins],
-  components: {QBtn, QPullToRefresh, QCard, QSearch, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCheckbox, QCardMedia, QChip, QList, QItem, QItemSide, QItemMain, AtomSpinner, QPopover, FingerprintSpinner, QInput},
+  components: {QBtn, QPullToRefresh, QDatetime, QChipsInput, QCard, QSearch, QCardTitle, QCardMain, QCardSeparator, QCardActions, QIcon, QCheckbox, QCardMedia, QChip, QList, QItem, QItemSide, QItemMain, AtomSpinner, QPopover, FingerprintSpinner, QInput},
   data () {
     return {
       logs: [],

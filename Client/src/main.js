@@ -15,9 +15,23 @@ import Quasar from 'quasar'
 import router from './router'
 import Chartkick from 'chartkick'
 import VueChartkick from 'vue-chartkick'
+import VueAuthenticate from 'vue-authenticate'
+import VueAxios from 'vue-axios'
+import axios from 'axios'
 // import Chart from 'chart.js'
 
 Vue.use(VueChartkick, { Chartkick })
+Vue.use(VueAxios, axios)
+Vue.use(VueAuthenticate, {
+  baseUrl: 'http://localhost:3000', // Your API domain
+
+  providers: {
+    google: {
+      clientId: '786249103826-k4qolflu8u3ibjd1k5uf5fi2l6a3lpmp.apps.googleusercontent.com',
+      redirectUri: 'http://localhost:8080/#/callback' // Your client app URL
+    }
+  }
+})
 
 Vue.config.productionTip = false
 Vue.use(Quasar) // Install Quasar Framework

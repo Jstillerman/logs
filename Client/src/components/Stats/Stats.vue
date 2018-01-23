@@ -8,18 +8,7 @@
       <q-input v-model="cValue" />
     </q-card>
     <br>
-    <q-card>
-      <q-card-title>
-        Frequency Pies
-        <span slot="subtitle">{{actionKey + " I " + actionType}}</span>
-      </q-card-title>
-      <q-card-main>
-        <v-select @click="getOptions(actionType)" v-model="actionType" :options="Object.keys(stats.freq || {})"></v-select>
-        <v-select v-model="actionKey" :options="actionData.attrs"></v-select>
-        <q-input v-model="minimiumCount" type="number"></q-input>
-        <pie-chart :data="filter(actionData[actionKey])"></pie-chart>
-      </q-card-main>
-    </q-card>
+
     <q-card v-if="!getSettings().HideNSFW">
       <scatter-chart :data="scatterData" xtitle="Times Smoked" ytitle="Minutes Productivity"></scatter-chart>
     </q-card
@@ -30,7 +19,9 @@
       <q-card-main>
         <v-select v-model="dailyTracker" :options="Object.keys(stats.freq || {})"></v-select>
         <br>
+        <q-checkbox v-model="durationMode" label="Duration Mode" style="padding-bottom: 10px;"/>
         <line-chart :data="getLineChartData()"></line-chart>
+        Average: {{getLineChartAverage()}}
       </q-card-main>
     </q-card>
   </div>
@@ -38,11 +29,11 @@
 
 <script>
 import axios from 'axios'
-import eventHub from '../EventHub.js'
-import conf from '../config.json'
+import eventHub from 'src/EventHub.js'
+import conf from 'src/config.json'
 import vSelect from 'vue-select'
-import mixins from '../mixins'
-import {QBtn, QCard, QCardMain, QCardTitle, QInput} from 'quasar'
+import mixins from 'src/mixins'
+import {QBtn, QCard, QCardMain, QCardTitle, QCheckbox, QInput} from 'quasar'
 
 import HotelDatePicker from 'vue-hotel-datepicker'
 
@@ -51,6 +42,9 @@ function sum (list) {
   list.forEach(n => { count += n })
   return count
 }
+function average (list) {
+  return sum(list)/list.length
+}
 
 export default {
   mixins: [mixins],
@@ -58,6 +52,7 @@ export default {
     vSelect,
     HotelDatePicker,
     QCard,
+    QCheckbox,
     QBtn,
     QInput,
     QCardMain,
@@ -74,6 +69,7 @@ export default {
       actionKey: 'what',
       actionType: 'ate',
       dayData: [],
+      durationMode: false,
       constraints: {},
       cField: '',
       cValue: ''
@@ -143,12 +139,20 @@ export default {
         return s
       }
     },
+    useConstraints (stats) {
+      return stats
+    },
     getLineChartData () {
       let data = {}
       this.dayData.forEach(day => {
-        data[day.date] = day.logs.filter(log => log.action === this.dailyTracker).length
+        if (!this.durationMode) data[day.date] = day.logs.filter(log => log.action === this.dailyTracker).length
+        else data[day.date] = sum(day.logs.filter(log => log.action === this.dailyTracker).map(log => log.duration || 0))
       })
       return data
+    },
+    getLineChartAverage () {
+      let d = this.getLineChartData()
+      return average(Object.keys(d).map(key => d[key]))
     },
     logConstraint (evt, checkIn) {
       this.timeConstraints[checkIn ? 'start' : 'end'] = evt
@@ -166,7 +170,7 @@ export default {
     })
 
     this.refresh()
-    this.getOptions(this.actionType)
+    this.getOptions()
   }
 }
 </script>
