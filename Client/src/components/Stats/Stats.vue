@@ -20,6 +20,11 @@
         <v-select v-model="dailyTracker" :options="Object.keys(stats.freq || {})"></v-select>
         <br>
         <q-checkbox v-model="durationMode" label="Duration Mode" style="padding-bottom: 10px;"/>
+        <q-checkbox v-model="priceMode" label="Price Mode" style="padding-bottom: 10px;"/>
+        <q-checkbox v-model="accumulate" label="Accumulate" style="padding-bottom: 10px;"/>
+        <q-checkbox v-model="smartCrop.enabled" label="Smart Crop" style="padding-bottom: 10px;"/>
+        <q-btn v-if="smartCrop.enabled" flat size="xs" @click="smartCrop.portion += 0.05">+</q-btn>
+        <q-btn v-if="smartCrop.enabled" flat size="xs" @click="smartCrop.portion -= 0.05">-</q-btn>
         <line-chart :data="getLineChartData()"></line-chart>
         Average: {{getLineChartAverage()}}
       </q-card-main>
@@ -70,6 +75,12 @@ export default {
       actionType: 'ate',
       dayData: [],
       durationMode: false,
+      priceMode: false,
+      accumulate: false,
+      smartCrop: {
+        enabled: false,
+        portion: 0.1 // portion of the data to drop at the the beginning
+      },
       constraints: {},
       cField: '',
       cValue: ''
@@ -78,6 +89,12 @@ export default {
   watch: {
     actionType (val) {
       this.getOptions()
+    },
+    durationMode (val) {
+      if (val) this.priceMode = false
+    },
+    priceMode (val) {
+      if (val) this.durationMode = false
     }
   },
   methods: {
@@ -144,10 +161,26 @@ export default {
     },
     getLineChartData () {
       let data = {}
+      let accum = 0
       this.dayData.forEach(day => {
-        if (!this.durationMode) data[day.date] = day.logs.filter(log => log.action === this.dailyTracker).length
-        else data[day.date] = sum(day.logs.filter(log => log.action === this.dailyTracker).map(log => log.duration || 0))
+        if (this.durationMode) data[day.date] = sum(day.logs.filter(log => log.action === this.dailyTracker).map(log => log.duration || 0))
+        else if (this.priceMode) data[day.date] = sum(day.logs.filter(log => log.action === this.dailyTracker).map(log => log.price || 0))
+        else data[day.date] = day.logs.filter(log => (log.action === this.dailyTracker)).length
+        accum += data[day.date]
+        if (this.accumulate) {
+          data[day.date] = accum
+        }
       })
+      if (this.smartCrop.enabled) {
+        let keys = Object.keys(data)
+        let otherAccum = 0
+        for (var i = 0; i < keys.length; i++) {
+          otherAccum += data[keys[i]]
+          console.log(otherAccum / accum, this.smartCrop.portion)
+          if (otherAccum / accum >= this.smartCrop.portion) break
+          delete data[keys[i]]
+        }
+      }
       return data
     },
     getLineChartAverage () {
